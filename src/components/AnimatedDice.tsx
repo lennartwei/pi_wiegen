@@ -18,7 +18,7 @@ function AnimatedDice({ value, size = 48, onAnimationComplete }: AnimatedDicePro
 
     const interval = setInterval(() => {
       setCurrentFrame(prev => (prev + 1) % 6);
-    }, 100);
+    }, 150); // Slower animation speed
 
     const timeout = setTimeout(() => {
       setIsAnimating(false);
@@ -26,7 +26,7 @@ function AnimatedDice({ value, size = 48, onAnimationComplete }: AnimatedDicePro
       if (onAnimationComplete) {
         onAnimationComplete();
       }
-    }, 1000);
+    }, 1500); // Longer animation duration
 
     return () => {
       clearInterval(interval);
@@ -37,8 +37,17 @@ function AnimatedDice({ value, size = 48, onAnimationComplete }: AnimatedDicePro
   const DiceIcon = isAnimating ? DICE_ICONS[currentFrame] : DICE_ICONS[value - 1];
 
   return (
-    <div className={`transform transition-transform duration-300 ${isAnimating ? 'animate-spin' : ''}`}>
-      <DiceIcon size={size} className={isAnimating ? 'opacity-75' : 'opacity-100'} />
+    <div className={`
+      transform transition-all duration-500
+      ${isAnimating ? 'animate-spin scale-110' : 'scale-100'}
+    `}>
+      <DiceIcon 
+        size={size} 
+        className={`
+          transition-all duration-300
+          ${isAnimating ? 'opacity-75' : 'opacity-100 animate-bounce'}
+        `}
+      />
     </div>
   );
 }

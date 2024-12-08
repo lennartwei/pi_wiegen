@@ -24,6 +24,7 @@ function Game() {
   const [isWin, setIsWin] = useState(false);
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
+  const [showDiceValues, setShowDiceValues] = useState(false);
 
   useEffect(() => {
     const settings = loadSettings();
@@ -37,7 +38,13 @@ function Game() {
 
   const handleRollClick = () => {
     setIsRolling(true);
+    setShowDiceValues(false);
     rollDice();
+  };
+
+  const handleAnimationComplete = () => {
+    setIsRolling(false);
+    setShowDiceValues(true);
   };
 
   const handleTare = async () => {
@@ -143,7 +150,7 @@ function Game() {
             className="w-full bg-green-600 hover:bg-green-700 p-4 rounded-lg transition-colors flex items-center justify-center gap-2"
             disabled={isLoading || isRolling}
           >
-            <Dice1 size={24} />
+            <Dice1 size={24} className={isRolling ? 'animate-spin' : ''} />
             Roll Dice
           </button>
         )}
@@ -153,21 +160,25 @@ function Game() {
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice1} 
-                onAnimationComplete={() => setIsRolling(false)} 
+                onAnimationComplete={handleAnimationComplete} 
               />
-              <p className="text-center mt-2">{state.dice1}</p>
+              {showDiceValues && (
+                <p className="text-center mt-2 animate-fade-in">{state.dice1}</p>
+              )}
             </div>
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice2} 
-                onAnimationComplete={() => setIsRolling(false)} 
+                onAnimationComplete={handleAnimationComplete} 
               />
-              <p className="text-center mt-2">{state.dice2}</p>
+              {showDiceValues && (
+                <p className="text-center mt-2 animate-fade-in">{state.dice2}</p>
+              )}
             </div>
           </div>
         )}
 
-        {state.phase === 'drinking' && (
+        {state.phase === 'drinking' && showDiceValues && (
           <div className="text-center space-y-4">
             <p className="text-lg mb-4">
               Target: {state.targetWeight}g ±{state.margin}g
