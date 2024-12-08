@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
-import { loadSettings } from '../utils/storage';
-import { updateLeaderboard } from '../utils/storage';
-import { isValidWeight } from '../utils/gameLogic';
+import { loadSettings, updatePlayerStats } from '../utils/storage';
+import { isValidWeight, calculateScore } from '../utils/gameLogic';
 import RoundResult from './RoundResult';
 import AnimatedDice from './AnimatedDice';
 
@@ -21,10 +20,9 @@ function Game() {
   const { getWeight, tare, isLoading, error } = useScale();
   const [weight, setWeight] = useState(0);
   const [showResult, setShowResult] = useState(false);
-  const [isWin, setIsWin] = useState(false);
+  const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
-  const [showDiceValues, setShowDiceValues] = useState(false);
 
   useEffect(() => {
     const settings = loadSettings();
@@ -38,13 +36,7 @@ function Game() {
 
   const handleRollClick = () => {
     setIsRolling(true);
-    setShowDiceValues(false);
     rollDice();
-  };
-
-  const handleAnimationComplete = () => {
-    setIsRolling(false);
-    setShowDiceValues(true);
   };
 
   const handleTare = async () => {
@@ -65,14 +57,26 @@ function Game() {
       const measuredWeight = Math.abs(measured);
       setWeight(measuredWeight);
       
-      const currentPlayer = state.players[state.currentPlayerIndex];
-      const perfectDrink = isValidWeight(measuredWeight, state.targetWeight, state.margin);
+      const settings = loadSettings();
+      const score = calculateScore(measuredWeight, state.targetWeight, settings);
+      setRoundScore(score);
       
-      setIsWin(perfectDrink);
+      const currentPlayer = state.players[state.currentPlayerIndex];
+      const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
+      
+      // Update player stats
+      updatePlayerStats(currentPlayer.name, {
+        score: score.score,
+        deviation: score.deviation,
+        targetWeight: state.targetWeight,
+        actualWeight: measuredWeight,
+        timestamp: Date.now(),
+        isPerfect: score.isPerfect
+      });
+      
       setShowResult(true);
       
-      if (perfectDrink) {
-        updateLeaderboard(currentPlayer.name, true);
+      if (isWin) {
         setTimeout(() => {
           setShowResult(false);
           moveToNextPlayer();
@@ -150,7 +154,7 @@ function Game() {
             className="w-full bg-green-600 hover:bg-green-700 p-4 rounded-lg transition-colors flex items-center justify-center gap-2"
             disabled={isLoading || isRolling}
           >
-            <Dice1 size={24} className={isRolling ? 'animate-spin' : ''} />
+            <Dice1 size={24} />
             Roll Dice
           </button>
         )}
@@ -160,25 +164,21 @@ function Game() {
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice1} 
-                onAnimationComplete={handleAnimationComplete} 
+                onAnimationComplete={() => setIsRolling(false)} 
               />
-              {showDiceValues && (
-                <p className="text-center mt-2 animate-fade-in">{state.dice1}</p>
-              )}
+              <p className="text-center mt-2">{state.dice1}</p>
             </div>
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice2} 
-                onAnimationComplete={handleAnimationComplete} 
+                onAnimationComplete={() => setIsRolling(false)} 
               />
-              {showDiceValues && (
-                <p className="text-center mt-2 animate-fade-in">{state.dice2}</p>
-              )}
+              <p className="text-center mt-2">{state.dice2}</p>
             </div>
           </div>
         )}
 
-        {state.phase === 'drinking' && showDiceValues && (
+        {state.phase === 'drinking' && (
           <div className="text-center space-y-4">
             <p className="text-lg mb-4">
               Target: {state.targetWeight}g ±{state.margin}g
@@ -233,11 +233,13 @@ function Game() {
 
         {showResult && (
           <RoundResult 
-            isWin={isWin}
+            isWin={isValidWeight(weight, state.targetWeight, state.margin)}
             weight={weight}
             targetWeight={state.targetWeight}
             margin={state.margin}
             attemptsLeft={state.maxAttempts - state.attempts - 1}
+            score={roundScore.score}
+            isPerfect={roundScore.isPerfect}
           />
         )}
       </div>

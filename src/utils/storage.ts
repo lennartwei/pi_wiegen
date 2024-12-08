@@ -1,12 +1,18 @@
-import { GameSettings, LeaderboardEntry } from '../types';
+import { GameSettings, PlayerStats, GameResult } from '../types';
 
 const SETTINGS_KEY = 'gameSettings';
-const LEADERBOARD_KEY = 'leaderboard';
+const PLAYER_STATS_KEY = 'playerStats';
 
 const DEFAULT_SETTINGS: GameSettings = {
   margin: 5,
   players: [],
-  maxRetries: 2
+  maxRetries: 2,
+  scoring: {
+    perfectScore: 1000,    // Base score for perfect match
+    marginPenalty: 100,    // Points lost per gram within margin
+    failurePenalty: 200,   // Points lost per gram outside margin
+    minScore: -500        // Minimum possible score
+  }
 };
 
 export function saveSettings(settings: GameSettings): void {
@@ -18,37 +24,84 @@ export function loadSettings(): GameSettings {
   if (!stored) return DEFAULT_SETTINGS;
   
   const settings = JSON.parse(stored);
-  // Ensure all fields exist with defaults
   return {
     ...DEFAULT_SETTINGS,
-    ...settings
+    ...settings,
+    scoring: {
+      ...DEFAULT_SETTINGS.scoring,
+      ...settings.scoring
+    }
   };
 }
 
-export function saveLeaderboard(entries: LeaderboardEntry[]): void {
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(entries));
+export function savePlayerStats(stats: PlayerStats[]): void {
+  localStorage.setItem(PLAYER_STATS_KEY, JSON.stringify(stats));
 }
 
-export function loadLeaderboard(): LeaderboardEntry[] {
-  const stored = localStorage.getItem(LEADERBOARD_KEY);
-  if (!stored) return [];
-  return JSON.parse(stored);
+export function loadPlayerStats(): PlayerStats[] {
+  const stored = localStorage.getItem(PLAYER_STATS_KEY);
+  return stored ? JSON.parse(stored) : [];
 }
 
-export function updateLeaderboard(playerName: string, isPerfectDrink: boolean): void {
-  const entries = loadLeaderboard();
-  const playerEntry = entries.find(entry => entry.name === playerName);
+export function updatePlayerStats(
+  playerName: string,
+  gameResult: GameResult
+): void {
+  const allStats = loadPlayerStats();
+  const playerStats = allStats.find(stats => stats.name === playerName);
   
-  if (playerEntry) {
-    playerEntry.games++;
-    if (isPerfectDrink) playerEntry.perfectDrinks++;
+  if (playerStats) {
+    // Update existing player stats
+    playerStats.games++;
+    playerStats.totalScore += gameResult.score;
+    playerStats.averageScore = playerStats.totalScore / playerStats.games;
+    
+    if (gameResult.isPerfect) {
+      playerStats.perfectDrinks++;
+    }
+    
+    // Update best and worst scores
+    playerStats.bestScore = Math.max(playerStats.bestScore, gameResult.score);
+    playerStats.worstScore = Math.min(playerStats.worstScore, gameResult.score);
+    
+    // Update average deviation
+    const totalDeviation = playerStats.averageDeviation * (playerStats.games - 1) + gameResult.deviation;
+    playerStats.averageDeviation = totalDeviation / playerStats.games;
+    
+    // Update win streaks
+    if (gameResult.score > 0) {
+      playerStats.currentWinStreak++;
+      playerStats.longestWinStreak = Math.max(playerStats.longestWinStreak, playerStats.currentWinStreak);
+    } else {
+      playerStats.currentWinStreak = 0;
+    }
+    
+    // Update win rate
+    const wins = playerStats.lastTenGames.filter(game => game.score > 0).length;
+    playerStats.winRate = (wins / playerStats.games) * 100;
+    
+    // Update last ten games
+    playerStats.lastTenGames.unshift(gameResult);
+    if (playerStats.lastTenGames.length > 10) {
+      playerStats.lastTenGames.pop();
+    }
   } else {
-    entries.push({
+    // Create new player stats
+    allStats.push({
       name: playerName,
       games: 1,
-      perfectDrinks: isPerfectDrink ? 1 : 0,
+      perfectDrinks: gameResult.isPerfect ? 1 : 0,
+      totalScore: gameResult.score,
+      averageScore: gameResult.score,
+      bestScore: gameResult.score,
+      worstScore: gameResult.score,
+      averageDeviation: gameResult.deviation,
+      lastTenGames: [gameResult],
+      winRate: gameResult.score > 0 ? 100 : 0,
+      longestWinStreak: gameResult.score > 0 ? 1 : 0,
+      currentWinStreak: gameResult.score > 0 ? 1 : 0
     });
   }
   
-  saveLeaderboard(entries);
+  savePlayerStats(allStats);
 }

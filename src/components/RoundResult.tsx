@@ -7,11 +7,21 @@ interface RoundResultProps {
   targetWeight: number;
   margin: number;
   attemptsLeft: number;
+  score: number;
+  isPerfect: boolean;
 }
 
-function RoundResult({ isWin, weight, targetWeight, margin, attemptsLeft }: RoundResultProps) {
+function RoundResult({ 
+  isWin, 
+  weight, 
+  targetWeight, 
+  margin, 
+  attemptsLeft,
+  score,
+  isPerfect
+}: RoundResultProps) {
   const difference = Math.abs(weight - targetWeight);
-  const differenceText = difference <= margin 
+  const differenceText = isPerfect
     ? 'Perfect drink!' 
     : `${difference.toFixed(1)}g ${weight > targetWeight ? 'too much' : 'too little'}`;
 
@@ -32,6 +42,9 @@ function RoundResult({ isWin, weight, targetWeight, margin, attemptsLeft }: Roun
         </h2>
         <p className="text-lg mb-1">Weight: {weight.toFixed(1)}g</p>
         <p className="opacity-80">{differenceText}</p>
+        <p className={`text-lg mt-2 ${score >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          Score: {score > 0 ? '+' : ''}{score}
+        </p>
         {!isWin && attemptsLeft > 0 && (
           <p className="text-sm mt-2 opacity-75">
             {attemptsLeft} {attemptsLeft === 1 ? 'attempt' : 'attempts'} remaining

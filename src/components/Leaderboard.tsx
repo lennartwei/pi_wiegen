@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy } from 'lucide-react';
-
-interface LeaderboardEntry {
-  name: string;
-  games: number;
-  perfectDrinks: number;
-}
+import { ArrowLeft, Trophy, Medal, Target, TrendingUp } from 'lucide-react';
+import { loadPlayerStats } from '../utils/storage';
+import PlayerStatsCard from './PlayerStats';
 
 function Leaderboard() {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [stats, setStats] = useState(loadPlayerStats());
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedEntries = localStorage.getItem('leaderboard');
-    if (savedEntries) {
-      setEntries(JSON.parse(savedEntries));
+  // Sort players by total score
+  const sortedStats = [...stats].sort((a, b) => b.totalScore - a.totalScore);
+
+  const getPlayerRank = (index: number) => {
+    switch (index) {
+      case 0: return '🥇';
+      case 1: return '🥈';
+      case 2: return '🥉';
+      default: return `${index + 1}th`;
     }
-  }, []);
+  };
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -31,29 +33,74 @@ function Leaderboard() {
         <h1 className="text-2xl font-bold flex-1 text-center">Leaderboard</h1>
       </div>
 
-      <div className="bg-white/10 p-6 rounded-lg w-full max-w-md">
-        {entries.length === 0 ? (
-          <div className="text-center py-8">
+      <div className="w-full max-w-2xl">
+        {stats.length === 0 ? (
+          <div className="bg-white/10 p-8 rounded-lg text-center">
             <Trophy size={48} className="mx-auto mb-4 opacity-50" />
             <p>No entries yet. Start playing to see the leaderboard!</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {entries.map((entry, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between bg-white/20 p-4 rounded-lg"
-              >
-                <div>
-                  <h3 className="font-bold">{entry.name}</h3>
-                  <p className="text-sm opacity-75">Games: {entry.games}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold">{entry.perfectDrinks}</p>
-                  <p className="text-sm opacity-75">Perfect Drinks</p>
-                </div>
+          <div className="space-y-6">
+            {/* Overall Rankings */}
+            <div className="bg-white/10 p-6 rounded-lg">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Trophy className="text-yellow-400" />
+                Overall Rankings
+              </h2>
+              <div className="space-y-3">
+                {sortedStats.map((player, index) => (
+                  <button
+                    key={player.name}
+                    onClick={() => setSelectedPlayer(player.name)}
+                    className={`w-full text-left p-4 rounded-lg transition-colors
+                      ${selectedPlayer === player.name ? 'bg-white/20' : 'bg-white/5 hover:bg-white/10'}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{getPlayerRank(index)}</span>
+                        <div>
+                          <div className="font-bold">{player.name}</div>
+                          <div className="text-sm opacity-75">
+                            {player.games} games played
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-lg">
+                          {player.totalScore.toLocaleString()} pts
+                        </div>
+                        <div className="text-sm opacity-75">
+                          {player.perfectDrinks} perfect drinks
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Stats Row */}
+                    <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
+                      <div className="bg-white/10 p-2 rounded">
+                        <div className="opacity-75">Win Rate</div>
+                        <div className="font-bold">{player.winRate.toFixed(1)}%</div>
+                      </div>
+                      <div className="bg-white/10 p-2 rounded">
+                        <div className="opacity-75">Best Streak</div>
+                        <div className="font-bold">{player.longestWinStreak}</div>
+                      </div>
+                      <div className="bg-white/10 p-2 rounded">
+                        <div className="opacity-75">Avg Score</div>
+                        <div className="font-bold">{Math.round(player.averageScore)}</div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Detailed Player Stats */}
+            {selectedPlayer && (
+              <PlayerStatsCard 
+                stats={stats.find(s => s.name === selectedPlayer)!} 
+              />
+            )}
           </div>
         )}
       </div>
