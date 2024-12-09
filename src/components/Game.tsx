@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
@@ -23,6 +23,9 @@ function Game() {
   const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
+
+  // Get the current color scheme based on attempts
+  const colors = BUTTON_COLORS[state.attempts % BUTTON_COLORS.length];
 
   useEffect(() => {
     const settings = loadSettings();
@@ -53,7 +56,7 @@ function Game() {
     if (!isTared) return;
 
     try {
-      const measured = await getWeight();
+      const measured = await getWeight(true);
       const measuredWeight = Math.abs(measured);
       setWeight(measuredWeight);
       
@@ -64,7 +67,6 @@ function Game() {
       const currentPlayer = state.players[state.currentPlayerIndex];
       const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
       
-      // Update player stats
       updatePlayerStats(currentPlayer.name, {
         score: score.score,
         deviation: score.deviation,
@@ -101,8 +103,6 @@ function Game() {
       setIsTared(false);
     }
   };
-
-  const currentColors = BUTTON_COLORS[state.attempts % BUTTON_COLORS.length];
 
   if (state.players.length === 0) {
     return (
@@ -189,7 +189,7 @@ function Game() {
                 <button
                   onClick={handleTare}
                   className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2 mb-2
-                    ${isTared ? 'bg-green-600 hover:bg-green-700' : currentColors.tare}`}
+                    ${isTared ? 'bg-green-600 hover:bg-green-700' : colors.tare}`}
                   disabled={isLoading}
                 >
                   {isTared ? <CheckCircle2 size={24} /> : <Scale size={24} />}
@@ -213,7 +213,7 @@ function Game() {
                 <button
                   onClick={handleMeasure}
                   className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2
-                    ${!isTared ? 'bg-gray-600 cursor-not-allowed' : currentColors.measure}`}
+                    ${!isTared ? 'bg-gray-600 cursor-not-allowed' : colors.measure}`}
                   disabled={isLoading || !isTared}
                 >
                   <Scale size={24} />

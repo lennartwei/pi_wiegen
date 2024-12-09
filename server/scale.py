@@ -7,6 +7,7 @@ from hx711 import HX711
 
 class Scale:
     CALIBRATION_FILE = 'calibration.json'
+    NUM_READINGS = 5  # Default number of readings
     
     def __init__(self, dout_pin=5, pd_sck_pin=6):
         self.dout_pin = dout_pin
@@ -45,10 +46,10 @@ class Scale:
             print(f"Error initializing scale: {e}")
             raise
 
-    def get_weight(self, num_readings=5):
+    def get_weight(self, num_readings=None):
         try:
             # Take multiple readings for stability using read_median
-            val = self.hx.get_weight(5)  # Increased to 15 readings for better stability
+            val = self.hx.get_weight(self.NUM_READINGS)
             if val is not None and -10000 < val < 10000:  # Basic sanity check
                 return round(val, 1)
             return 0
@@ -59,7 +60,7 @@ class Scale:
 
     def tare(self):
         try:
-            self.hx.tare(times=5)  # Use 15 readings for more stable tare
+            self.hx.tare(times=self.NUM_READINGS)
             time.sleep(0.2)  # Small delay for stability
             #self._save_calibration()
         except Exception as e:
@@ -74,7 +75,7 @@ class Scale:
             time.sleep(1)  # Allow the scale to settle
             
             # Take multiple readings of the known weight
-            val = self.hx.get_weight(15)  # Use 15 readings for stability
+            val = self.hx.get_weight(self.NUM_READINGS)
             
             if val is None or abs(val) > 10000:
                 raise Exception("Invalid reading during calibration")

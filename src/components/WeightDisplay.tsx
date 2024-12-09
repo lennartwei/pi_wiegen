@@ -8,21 +8,25 @@ function WeightDisplay() {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
+    let isMounted = true;
     
     const updateWeight = async () => {
       try {
-        const measured = await getWeight();
-        setWeight(Math.abs(measured));
+        const measured = await getWeight(false); // Set priority to false for background updates
+        if (isMounted && measured !== 0) { // Only update if we got a real measurement
+          setWeight(Math.abs(measured));
+        }
       } catch (error) {
         console.error('Error reading weight:', error);
       }
     };
 
-    // Update weight immediately and then every 500ms
+    // Update weight every 2 seconds
     updateWeight();
-    intervalId = setInterval(updateWeight, 500);
+    intervalId = setInterval(updateWeight, 1000);
 
     return () => {
+      isMounted = false;
       clearInterval(intervalId);
     };
   }, [getWeight]);

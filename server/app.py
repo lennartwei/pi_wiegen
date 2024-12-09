@@ -28,7 +28,8 @@ def tare_scale():
 @app.route('/calibrate', methods=['POST'])
 def calibrate():
     try:
-        step = request.json.get('step')
+        data = request.get_json()
+        step = data.get('step')
         
         if step == 1:
             scale.tare()
@@ -58,6 +59,6 @@ def calibrate():
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5000, use_reloader = False, debug=True)
+        app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
     finally:
         scale.cleanup()

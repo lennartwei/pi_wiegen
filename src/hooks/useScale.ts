@@ -1,6 +1,14 @@
 import { useState, useCallback } from 'react';
 import { API_BASE_URL } from '../config';
 
+// Singleton to manage weight measurement priority
+const weightMeasurement = {
+  isPriority: false,
+  setPriority: (value: boolean) => {
+    weightMeasurement.isPriority = value;
+  }
+};
+
 export interface ScaleResponse {
   weight: number;
   error?: string;
@@ -10,7 +18,16 @@ export function useScale() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getWeight = useCallback(async (): Promise<number> => {
+  const getWeight = useCallback(async (priority: boolean = false): Promise<number> => {
+    if (!priority && weightMeasurement.isPriority) {
+      // Skip non-priority measurements when a priority measurement is in progress
+      return 0;
+    }
+
+    if (priority) {
+      weightMeasurement.setPriority(true);
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -24,15 +41,22 @@ export function useScale() {
       return 0;
     } finally {
       setIsLoading(false);
+      if (priority) {
+        weightMeasurement.setPriority(false);
+      }
     }
   }, []);
 
   const tare = useCallback(async (): Promise<boolean> => {
+    weightMeasurement.setPriority(true);
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(`${API_BASE_URL}/tare`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
       const data = await response.json();
       if (!data.success) throw new Error(data.error);
@@ -43,6 +67,7 @@ export function useScale() {
       return false;
     } finally {
       setIsLoading(false);
+      weightMeasurement.setPriority(false);
     }
   }, []);
 
