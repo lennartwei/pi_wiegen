@@ -25,11 +25,22 @@ def tare_scale():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/reset', methods=['POST'])
+def reset_scale():
+    try:
+        success = scale.reset_calibration()
+        if success:
+            return jsonify({'success': True, 'message': 'Scale reset to factory defaults'})
+        return jsonify({'success': False, 'message': 'Failed to reset scale'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/calibrate', methods=['POST'])
 def calibrate():
     try:
         data = request.get_json()
         step = data.get('step')
+        known_weight = data.get('known_weight', 100.0)
         
         if step == 1:
             scale.tare()
@@ -39,7 +50,7 @@ def calibrate():
             })
         
         elif step == 2:
-            scale.calibrate_with_known_weight()
+            scale.calibrate_with_known_weight(known_weight)
             return jsonify({
                 'success': True,
                 'message': 'Scale calibrated. Please remove the weight.'

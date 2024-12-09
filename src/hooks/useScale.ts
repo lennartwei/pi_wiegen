@@ -71,5 +71,29 @@ export function useScale() {
     }
   }, []);
 
-  return { getWeight, tare, isLoading, error };
+  const resetScale = useCallback(async (): Promise<boolean> => {
+    weightMeasurement.setPriority(true);
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/reset`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+      return true;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to reset scale';
+      setError(message);
+      return false;
+    } finally {
+      setIsLoading(false);
+      weightMeasurement.setPriority(false);
+    }
+  }, []);
+
+  return { getWeight, tare, resetScale, isLoading, error };
 }

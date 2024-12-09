@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Scale } from 'lucide-react';
+import { ArrowLeft, Scale, RotateCcw } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { useScale } from '../hooks/useScale';
 
 function Calibration() {
   const [step, setStep] = useState(1);
   const [status, setStatus] = useState('');
+  const [knownWeight, setKnownWeight] = useState<number>(100);
   const navigate = useNavigate();
+  const { resetScale } = useScale();
 
   const calibrate = async () => {
     try {
@@ -15,7 +18,7 @@ function Calibration() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ step }),
+        body: JSON.stringify({ step, known_weight: knownWeight }),
       });
       
       const data = await response.json();
@@ -31,6 +34,19 @@ function Calibration() {
     } catch (error) {
       setStatus('Error during calibration');
       console.error('Calibration error:', error);
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      const success = await resetScale();
+      if (success) {
+        setStatus('Scale reset to factory defaults');
+        setTimeout(() => setStatus(''), 2000);
+      }
+    } catch (error) {
+      setStatus('Error resetting scale');
+      console.error('Reset error:', error);
     }
   };
 
@@ -54,7 +70,22 @@ function Calibration() {
             <p>Remove all weight from the scale and press calibrate</p>
           )}
           {step === 2 && (
-            <p>Place a known weight (100g) on the scale and press calibrate</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Calibration Weight (grams)
+                </label>
+                <input
+                  type="number"
+                  value={knownWeight}
+                  onChange={(e) => setKnownWeight(Number(e.target.value))}
+                  className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
+                  min="1"
+                  max="1000"
+                />
+              </div>
+              <p>Place the weight on the scale and press calibrate</p>
+            </div>
           )}
           {step === 3 && (
             <p>Remove the weight and press calibrate to finish</p>
@@ -67,12 +98,22 @@ function Calibration() {
           </div>
         )}
 
-        <button
-          onClick={calibrate}
-          className="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-lg transition-colors"
-        >
-          Calibrate
-        </button>
+        <div className="space-y-4">
+          <button
+            onClick={calibrate}
+            className="w-full bg-blue-600 hover:bg-blue-700 p-4 rounded-lg transition-colors"
+          >
+            Calibrate
+          </button>
+
+          <button
+            onClick={handleReset}
+            className="w-full bg-red-600 hover:bg-red-700 p-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <RotateCcw size={20} />
+            Reset to Factory Defaults
+          </button>
+        </div>
       </div>
     </div>
   );
