@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
+import { useSession } from '../hooks/useSession';
 import { loadSettings, updatePlayerStats } from '../utils/storage';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
 import RoundResult from './RoundResult';
@@ -18,6 +19,7 @@ function Game() {
   const navigate = useNavigate();
   const { state, rollDice, nextPhase, setPlayers, setMargin, incrementAttempts, moveToNextPlayer } = useGameState();
   const { getWeight, tare, isLoading, error } = useScale();
+  const { session } = useSession();
   const [weight, setWeight] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
@@ -36,6 +38,13 @@ function Game() {
   useEffect(() => {
     setIsTared(false);
   }, [state.phase, state.currentPlayerIndex, state.attempts]);
+
+  // Redirect to session page if not in a session
+  useEffect(() => {
+    if (!session.sessionId) {
+      navigate('/session');
+    }
+  }, [session.sessionId, navigate]);
 
   const handleRollClick = () => {
     setIsRolling(true);

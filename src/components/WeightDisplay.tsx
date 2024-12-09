@@ -1,35 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Scale } from 'lucide-react';
 import { useScale } from '../hooks/useScale';
+import { useWeightDisplayConfig } from '../hooks/useWeightDisplayConfig';
 
 function WeightDisplay() {
   const [weight, setWeight] = useState<number | null>(null);
   const { getWeight } = useScale();
+  const { updateRate } = useWeightDisplayConfig();
+
+  const updateWeight = useCallback(async () => {
+    try {
+      const measured = await getWeight(false);
+      setWeight(measured !== 0 ? Math.abs(measured) : null);
+    } catch (error) {
+      console.error('Error reading weight:', error);
+      setWeight(null);
+    }
+  }, [getWeight]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
     let isMounted = true;
-    
-    const updateWeight = async () => {
-      try {
-        const measured = await getWeight(false); // Set priority to false for background updates
-        if (isMounted && measured !== 0) { // Only update if we got a real measurement
-          setWeight(Math.abs(measured));
-        }
-      } catch (error) {
-        console.error('Error reading weight:', error);
+    let intervalId: NodeJS.Timeout;
+
+    const runUpdate = async () => {
+      if (isMounted) {
+        await updateWeight();
       }
     };
 
-    // Update weight every 2 seconds
-    updateWeight();
-    intervalId = setInterval(updateWeight, 2000);
+    // Initial update
+    runUpdate();
+
+    // Set up interval
+    intervalId = setInterval(runUpdate, updateRate);
 
     return () => {
       isMounted = false;
       clearInterval(intervalId);
+      setWeight(null);
     };
-  }, [getWeight]);
+  }, [updateRate, updateWeight]);
 
   return (
     <div className="fixed bottom-4 right-4 bg-black/50 backdrop-blur-sm rounded-lg p-3 flex items-center gap-2 text-white/90 shadow-lg">

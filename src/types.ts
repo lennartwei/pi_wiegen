@@ -11,7 +11,7 @@ export interface GameSettings {
     perfectScore: number;     // Points for perfect match (0 deviation)
     marginPenalty: number;    // Points deducted per gram within margin
     failurePenalty: number;   // Points deducted per gram outside margin
-    minScore: number;         // Minimum score possible for a round
+    minScore: number;         // Minimum possible score for a round
   };
 }
 
@@ -43,4 +43,30 @@ export interface RoundScore {
   score: number;
   isPerfect: boolean;
   deviation: number;
+}
+
+export interface GameSession {
+  id: string;
+  hostId: string;
+  players: Player[];
+  currentPlayerIndex: number;
+  dice1: number;
+  dice2: number;
+  targetWeight: number;
+  margin: number;
+  phase: 'rolling' | 'drinking' | 'measuring';
+  attempts: number;
+  maxAttempts: number;
+  isActive: boolean;
+}
+
+export interface SessionState {
+  sessionId: string | null;
+  isHost: boolean;
+  connected: boolean;
+}
+
+export interface WeightDisplayConfig {
+  enabled: boolean;
+  updateRate: number; // in milliseconds
 }

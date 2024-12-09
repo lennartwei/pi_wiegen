@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Trophy, PlayCircle, Scale } from 'lucide-react';
+import { Settings, Trophy, PlayCircle, Scale, Users } from 'lucide-react';
 
 function MainMenu() {
   const navigate = useNavigate();
@@ -11,11 +11,11 @@ function MainMenu() {
       
       <div className="grid gap-4 w-full max-w-xs">
         <button
-          onClick={() => navigate('/game')}
+          onClick={() => navigate('/session')}
           className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg transition-colors"
         >
-          <PlayCircle size={24} />
-          Start Game
+          <Users size={24} />
+          Play Online
         </button>
         
         <button

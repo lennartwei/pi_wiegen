@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react';
+import { ArrowLeft, Settings as SettingsIcon, Scale } from 'lucide-react';
 import { loadSettings, saveSettings } from '../utils/storage';
+import { useWeightDisplayConfig } from '../hooks/useWeightDisplayConfig';
 import type { GameSettings } from '../types';
 
 function Settings() {
@@ -18,6 +19,7 @@ function Settings() {
   });
   const [newPlayer, setNewPlayer] = useState('');
   const navigate = useNavigate();
+  const { showWeightDisplay, updateRate, toggleWeightDisplay, setUpdateRate } = useWeightDisplayConfig();
 
   useEffect(() => {
     const savedSettings = loadSettings();
@@ -101,6 +103,40 @@ function Settings() {
           <p className="text-sm opacity-75 mt-1">
             Number of attempts allowed before moving to next player
           </p>
+        </div>
+
+        <div className="space-y-4 p-4 bg-white/5 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Scale size={20} />
+              <span>Weight Display</span>
+            </div>
+            <button
+              onClick={toggleWeightDisplay}
+              className={`px-4 py-2 rounded transition-colors ${
+                showWeightDisplay ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'
+              }`}
+            >
+              {showWeightDisplay ? 'Enabled' : 'Disabled'}
+            </button>
+          </div>
+
+          {showWeightDisplay && (
+            <div>
+              <label className="block text-sm opacity-75 mb-2">
+                Update Rate (seconds)
+              </label>
+              <input
+                type="number"
+                value={updateRate / 1000}
+                onChange={(e) => setUpdateRate(Number(e.target.value) * 1000)}
+                min={0.5}
+                max={10}
+                step={0.5}
+                className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
+              />
+            </div>
+          )}
         </div>
 
         <div className="border-t border-white/10 pt-4">

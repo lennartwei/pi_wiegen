@@ -3,13 +3,15 @@ Description=Drink and Roll Game Server
 After=network.target
 
 [Service]
-ExecStart=/home/pi/pi_wiegen_by_bolt/server/venv/bin/python /home/pi/pi_wiegen_by_bolt/server/app.py
+ExecStart=/home/pi/venv/bin/python /home/pi/pi_wiegen_by_bolt/server/app.py
 WorkingDirectory=/home/pi/pi_wiegen_by_bolt/server
 User=pi
 Group=pi
 Restart=always
 RestartSec=5
 Environment=PYTHONUNBUFFERED=1
+Environment=FLASK_ENV=development
+Environment=FLASK_DEBUG=1
 
 [Install]
 WantedBy=multi-user.target
