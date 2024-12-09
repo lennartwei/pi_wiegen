@@ -76,7 +76,7 @@ class Scale:
         try:
             self.hx.tare(times=self.NUM_READINGS)
             time.sleep(0.2)  # Small delay for stability
-            self._save_calibration()
+            #self._save_calibration()
         except Exception as e:
             print(f"Error during tare: {e}")
             self.init_scale()
