@@ -1,9 +1,9 @@
-from hx711 import HX711
+import RPi.GPIO as GPIO
 import time
 import statistics
 import json
 import os
-import RPi.GPIO as GPIO
+from hx711 import HX711
 
 class Scale:
     CALIBRATION_FILE = 'calibration.json'
@@ -21,7 +21,7 @@ class Scale:
                     return json.load(f)
         except Exception as e:
             print(f"Error loading calibration: {e}")
-        return {'reference_unit': 1, 'offset': 0}
+        return {'reference_unit': -320795.0 / 803.2, 'offset': 0}
 
     def _save_calibration(self):
         try:
@@ -46,39 +46,21 @@ class Scale:
             raise
 
     def get_weight(self, num_readings=5):
-        values = []
-        retries = 3
-        
-        while retries > 0 and len(values) < num_readings:
-            try:
-                # Use read_median for stable readings
-                val = self.hx.get_weight(times=3)
-                if val is not None and -10000 < val < 10000:  # Basic sanity check
-                    values.append(val)
-                time.sleep(0.1)
-            except Exception as e:
-                print(f"Error reading weight: {e}")
-                retries -= 1
-                if retries == 0:
-                    self.init_scale()
-                time.sleep(0.5)
-
-        if not values:
-            raise Exception("Unable to get stable reading")
-
-        # Use median filtering to remove outliers
-        if len(values) >= 3:
-            mean = statistics.mean(values)
-            stdev = statistics.stdev(values)
-            filtered = [x for x in values if abs(x - mean) <= 2 * stdev]
-            if filtered:
-                return round(statistics.median(filtered), 1)
-
-        return round(statistics.median(values), 1)
+        try:
+            # Take multiple readings for stability using read_median
+            val = self.hx.get_weight(5)  # Increased to 15 readings for better stability
+            if val is not None and -10000 < val < 10000:  # Basic sanity check
+                return round(val, 1)
+            return 0
+        except Exception as e:
+            print(f"Error reading weight: {e}")
+            self.init_scale()  # Try reinitializing on error
+            return 0
 
     def tare(self):
         try:
-            self.hx.tare(times=15)  # Use built-in tare with 15 readings
+            self.hx.tare(times=5)  # Use 15 readings for more stable tare
+            time.sleep(0.2)  # Small delay for stability
             #self._save_calibration()
         except Exception as e:
             print(f"Error during tare: {e}")
@@ -92,21 +74,13 @@ class Scale:
             time.sleep(1)  # Allow the scale to settle
             
             # Take multiple readings of the known weight
-            readings = []
-            for _ in range(10):
-                val = self.hx.get_weight(times=3)
-                if val is not None and -10000 < val < 10000:
-                    readings.append(val)
-                time.sleep(0.1)
-
-            if not readings:
-                raise Exception("Unable to get stable calibration readings")
-
-            # Calculate new reference unit using median reading
-            median_reading = statistics.median(readings)
-            new_reference = (self.hx.get_reference_unit() * known_weight) / median_reading
+            val = self.hx.get_weight(15)  # Use 15 readings for stability
             
-            # Update reference unit and save calibration
+            if val is None or abs(val) > 10000:
+                raise Exception("Invalid reading during calibration")
+
+            # Calculate and set new reference unit
+            new_reference = (self.hx.get_reference_unit() * known_weight) / val
             self.hx.set_reference_unit(new_reference)
             self._save_calibration()
             

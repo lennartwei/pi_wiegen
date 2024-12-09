@@ -5,7 +5,6 @@ import Game from './components/Game';
 import Settings from './components/Settings';
 import Leaderboard from './components/Leaderboard';
 import Calibration from './components/Calibration';
-import WeightDisplay from './components/WeightDisplay';
 
 function App() {
   return (
@@ -19,7 +18,6 @@ function App() {
           <Route path="/calibration" element={<Calibration />} />
         </Routes>
       </div>
-      <WeightDisplay />
     </div>
   );
 }
