@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, Medal, Target, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Trophy, Settings } from 'lucide-react';
 import { loadPlayerStats } from '../utils/storage';
 import PlayerStatsCard from './PlayerStats';
+import LeaderboardManagement from './LeaderboardManagement';
 
 function Leaderboard() {
   const [stats, setStats] = useState(loadPlayerStats());
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [showManagement, setShowManagement] = useState(false);
   const navigate = useNavigate();
 
   // Sort players by total score
@@ -21,6 +23,10 @@ function Leaderboard() {
     }
   };
 
+  const handleStatsUpdate = (newStats: typeof stats) => {
+    setStats(newStats);
+  };
+
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center w-full">
@@ -31,6 +37,12 @@ function Leaderboard() {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold flex-1 text-center">Leaderboard</h1>
+        <button
+          onClick={() => setShowManagement(true)}
+          className="text-white hover:text-gray-300 transition-colors"
+        >
+          <Settings size={24} />
+        </button>
       </div>
 
       <div className="w-full max-w-2xl">
@@ -104,6 +116,14 @@ function Leaderboard() {
           </div>
         )}
       </div>
+
+      {showManagement && (
+        <LeaderboardManagement
+          stats={stats}
+          onClose={() => setShowManagement(false)}
+          onUpdate={handleStatsUpdate}
+        />
+      )}
     </div>
   );
 }
