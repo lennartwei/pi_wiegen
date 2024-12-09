@@ -6,8 +6,13 @@ import os
 from hx711 import HX711
 
 class Scale:
-    CALIBRATION_FILE = 'calibration.json'
+    CALIBRATION_FILE = os.path.join(os.path.dirname(__file__), 'calibration.json')
     NUM_READINGS = 5  # Default number of readings
+    DEFAULT_CALIBRATION = {
+    'reference_unit': -399.3961653,
+    'offset': 0
+    }
+    
     
     def __init__(self, dout_pin=5, pd_sck_pin=6):
         self.dout_pin = dout_pin
@@ -19,18 +24,30 @@ class Scale:
         try:
             if os.path.exists(self.CALIBRATION_FILE):
                 with open(self.CALIBRATION_FILE, 'r') as f:
-                    return json.load(f)
+                    data = json.load(f)
+                    # Validate calibration data
+                    if 'reference_unit' in data and 'offset' in data:
+                        return data
         except Exception as e:
             print(f"Error loading calibration: {e}")
-        return {'reference_unit': -320795.0 / 803.2, 'offset': 0}
+        
+        # If file doesn't exist or is invalid, create it with default values
+        self._save_calibration(self.DEFAULT_CALIBRATION)
+        return self.DEFAULT_CALIBRATION
 
-    def _save_calibration(self):
+    def _save_calibration(self, calibration_data=None):
         try:
-            with open(self.CALIBRATION_FILE, 'w') as f:
-                json.dump({
+            if calibration_data is None:
+                calibration_data = {
                     'reference_unit': self.hx.get_reference_unit(),
                     'offset': self.hx.get_offset()
-                }, f)
+                }
+            
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(self.CALIBRATION_FILE), exist_ok=True)
+            
+            with open(self.CALIBRATION_FILE, 'w') as f:
+                json.dump(calibration_data, f, indent=2)
         except Exception as e:
             print(f"Error saving calibration: {e}")
 
@@ -41,7 +58,7 @@ class Scale:
             self.hx.set_reference_unit(self.calibration['reference_unit'])
             self.hx.set_offset(self.calibration['offset'])
             self.hx.reset()
-            time.sleep(0.1)
+            time.sleep(0.5)
         except Exception as e:
             print(f"Error initializing scale: {e}")
             raise

@@ -52,7 +52,7 @@ def main():
                 print('Place drink to tare')
                 while weight_result is None:
                     try:
-                        weight = hx.get_weight(3)
+                        weight = hx.get_weight(1)
                         weights.append(weight)
                         sys.stdout.write(f"\r{weight:6.1f}g")
                         sys.stdout.flush()
