@@ -1,19 +1,29 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from scale import Scale
+from battery import BatteryMonitor
 import json
 
 app = Flask(__name__)
 CORS(app)
 
-# Initialize scale
+# Initialize hardware
 scale = Scale()
+battery = BatteryMonitor()
 
 @app.route('/weight')
 def get_weight():
     try:
         weight = scale.get_weight()
         return jsonify({'weight': weight})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/battery')
+def get_battery():
+    try:
+        status = battery.get_status()
+        return jsonify(status)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -70,6 +80,7 @@ def calibrate():
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+        app.run(host='0.0.0.0', port=5000)
     finally:
         scale.cleanup()
+        battery.cleanup()
