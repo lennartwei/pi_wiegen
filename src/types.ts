@@ -44,3 +44,19 @@ export interface RoundScore {
   isPerfect: boolean;
   deviation: number;
 }
+
+export interface Session {
+  id: string;
+  name: string;
+  owner: string;
+  created_at: number;
+  settings: GameSettings;
+  game_state: any;
+  last_updated: number;
+}
+
+export interface SessionContextType {
+  session: Session | null;
+  isOwner: boolean;
+  updateSession: (settings?: GameSettings, gameState?: any) => Promise<void>;
+}
