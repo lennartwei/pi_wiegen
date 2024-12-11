@@ -65,7 +65,7 @@ class Scale:
         try:
             val = self.hx.get_weight(self.NUM_READINGS)
             if val is not None and -10000 < val < 10000:  # Basic sanity check
-                return round(val, 1)
+                return max(0,round(val, 1))
             return 0
         except Exception as e:
             print(f"Error reading weight: {e}")
@@ -74,8 +74,8 @@ class Scale:
 
     def tare(self):
         try:
-            self.hx.tare(times=self.NUM_READINGS)
-            time.sleep(0.2)  # Small delay for stability
+            self.hx.tare(times=10)
+            time.sleep(0.3)  # Small delay for stability
             #self._save_calibration()
         except Exception as e:
             print(f"Error during tare: {e}")

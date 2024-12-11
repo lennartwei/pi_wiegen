@@ -6,6 +6,7 @@ import Settings from './components/Settings';
 import Leaderboard from './components/Leaderboard';
 import Calibration from './components/Calibration';
 import WeightDisplay from './components/WeightDisplay';
+import BatteryStatus from './components/BatteryStatus';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         </Routes>
       </div>
       <WeightDisplay />
+      <BatteryStatus />
     </div>
   );
 }
