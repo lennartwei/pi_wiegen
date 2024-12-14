@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle, Keyboard } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
+import { useKeyboardControls } from '../hooks/useKeyboardControls';
 import { loadSettings, updatePlayerStats } from '../utils/storage';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
 import RoundResult from './RoundResult';
@@ -23,6 +24,7 @@ function Game() {
   const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
+  const [showControls, setShowControls] = useState(false);
 
   // Get the current color scheme based on attempts
   const colors = BUTTON_COLORS[state.attempts % BUTTON_COLORS.length];
@@ -104,6 +106,16 @@ function Game() {
     }
   };
 
+  // Set up keyboard controls
+  useKeyboardControls({
+    onRoll: handleRollClick,
+    onTare: handleTare,
+    onMeasure: handleMeasure,
+    canRoll: state.phase === 'rolling' && !isLoading && !isRolling,
+    canTare: state.phase === 'drinking' && !isLoading && !isTared,
+    canMeasure: state.phase === 'drinking' && !isLoading && isTared,
+  });
+
   if (state.players.length === 0) {
     return (
       <div className="text-center p-8">
@@ -128,7 +140,31 @@ function Game() {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold flex-1 text-center">Game Round</h1>
+        <button
+          onClick={() => setShowControls(!showControls)}
+          className="text-white hover:text-gray-300 transition-colors"
+        >
+          <Keyboard size={24} />
+        </button>
       </div>
+
+      {showControls && (
+        <div className="bg-black/20 backdrop-blur-sm p-4 rounded-lg text-sm">
+          <h3 className="font-bold mb-2">Keyboard Controls:</h3>
+          <ul className="space-y-1">
+            <li>
+              <kbd className="px-2 py-1 bg-white/10 rounded">Space</kbd>
+              {' '} Roll dice / Measure weight
+            </li>
+            <li>
+              <kbd className="px-2 py-1 bg-white/10 rounded">↑</kbd>
+              {' '} or {' '}
+              <kbd className="px-2 py-1 bg-white/10 rounded">↓</kbd>
+              {' '} Tare scale
+            </li>
+          </ul>
+        </div>
+      )}
 
       <div className="bg-white/10 p-6 rounded-lg w-full max-w-md">
         <div className="flex justify-between items-center mb-4">

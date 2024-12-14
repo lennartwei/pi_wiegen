@@ -1,18 +1,15 @@
 {
-  "margin": 15,
-  "maxRetries": 2,
-  "numReadings": 5,
+  "margin": 10,
   "players": [
-    "Winzer",
     "Lennart",
-    "Lars",
-    "Martin",
-    "Jonas"
+    "Lars"
   ],
+  "maxRetries": 2,
   "scoring": {
-    "failurePenalty": 200,
+    "perfectScore": 1000,
     "marginPenalty": 100,
-    "minScore": -500,
-    "perfectScore": 1000
-  }
+    "failurePenalty": 200,
+    "minScore": -500
+  },
+  "numReadings": 5
 }
