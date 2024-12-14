@@ -1,0 +1,12 @@
+{
+  "margin": 5,
+  "maxRetries": 2,
+  "numReadings": 5,
+  "players": [],
+  "scoring": {
+    "failurePenalty": 200,
+    "marginPenalty": 100,
+    "minScore": -500,
+    "perfectScore": 1000
+  }
+}
