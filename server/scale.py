@@ -65,7 +65,7 @@ class Scale:
         try:
             val = self.hx.get_weight(self.NUM_READINGS)
             if val is not None and -10000 < val < 10000:  # Basic sanity check
-                return max(0,round(val, 1))
+                return round(val, 1)
             return 0
         except Exception as e:
             print(f"Error reading weight: {e}")
