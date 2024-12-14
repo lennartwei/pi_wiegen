@@ -1,0 +1,15 @@
+{
+    "settings": {
+      "margin": 5,
+      "players": [],
+      "maxRetries": 2,
+      "scoring": {
+        "perfectScore": 1000,
+        "marginPenalty": 100,
+        "failurePenalty": 200,
+        "minScore": -500
+      }
+    },
+    "playerStats": []
+  }
+  
