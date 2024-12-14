@@ -1,12 +1,16 @@
 {
   "margin": 5,
+  "players": [
+    "Lennart",
+    "Lars",
+    "ppeter"
+  ],
   "maxRetries": 2,
-  "numReadings": 5,
-  "players": [],
   "scoring": {
-    "failurePenalty": 200,
+    "perfectScore": 1000,
     "marginPenalty": 100,
-    "minScore": -500,
-    "perfectScore": 1000
-  }
+    "failurePenalty": 200,
+    "minScore": -500
+  },
+  "numReadings": 5
 }
