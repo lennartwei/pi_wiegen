@@ -14,7 +14,7 @@ function WeightDisplay() {
       try {
         const measured = await getWeight(false); // Set priority to false for background updates
         if (isMounted && measured !== 0) { // Only update if we got a real measurement
-          setWeight(Math.abs(measured));
+          setWeight(measured);
         }
       } catch (error) {
         console.error('Error reading weight:', error);
