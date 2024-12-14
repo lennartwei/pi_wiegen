@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle, CloudOff } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
+import { useStorage } from '../hooks/useStorage';
 import { loadSettings, updatePlayerStats } from '../utils/storage';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
 import RoundResult from './RoundResult';
@@ -17,12 +18,14 @@ const BUTTON_COLORS = [
 function Game() {
   const navigate = useNavigate();
   const { state, rollDice, nextPhase, setPlayers, setMargin, incrementAttempts, moveToNextPlayer } = useGameState();
-  const { getWeight, tare, isLoading, error } = useScale();
+  const { getWeight, tare, isLoading, error: scaleError } = useScale();
+  const { saveData, syncAfterTurn, error: syncError, lastSyncTime } = useStorage();
   const [weight, setWeight] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<'success' | 'error' | null>(null);
 
   // Get the current color scheme based on attempts
   const colors = BUTTON_COLORS[state.attempts % BUTTON_COLORS.length];
@@ -67,6 +70,7 @@ function Game() {
       const currentPlayer = state.players[state.currentPlayerIndex];
       const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
       
+      // Update player stats
       updatePlayerStats(currentPlayer.name, {
         score: score.score,
         deviation: score.deviation,
@@ -75,6 +79,18 @@ function Game() {
         timestamp: Date.now(),
         isPerfect: score.isPerfect
       });
+
+      // Sync data after updating stats
+      try {
+        const syncResult = await syncAfterTurn();
+        setSyncStatus(syncResult.success ? 'success' : 'error');
+        
+        // Reset sync status after 3 seconds
+        setTimeout(() => setSyncStatus(null), 3000);
+      } catch (error) {
+        console.error('Sync error:', error);
+        setSyncStatus('error');
+      }
       
       setShowResult(true);
       
@@ -128,6 +144,16 @@ function Game() {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold flex-1 text-center">Game Round</h1>
+        
+        {/* Sync Status Indicator */}
+        <div className="flex items-center gap-2">
+          {syncStatus === 'error' && (
+            <CloudOff size={20} className="text-red-400" title="Sync failed" />
+          )}
+          {syncError && (
+            <span className="text-sm text-red-400">{syncError}</span>
+          )}
+        </div>
       </div>
 
       <div className="bg-white/10 p-6 rounded-lg w-full max-w-md">
@@ -142,9 +168,9 @@ function Game() {
           )}
         </div>
 
-        {error && (
+        {scaleError && (
           <div className="bg-red-500/20 p-4 rounded-lg mb-4">
-            {error}
+            {scaleError}
           </div>
         )}
 
