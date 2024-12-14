@@ -1,6 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import { Player } from '../types';
 import { loadSettings } from '../utils/storage';
+import { API_BASE_URL } from '../config';
+
+const socket = io(API_BASE_URL);
 
 export interface GameState {
   players: Player[];
@@ -30,6 +34,20 @@ export function useGameState(initialMargin: number = 5) {
     };
   });
 
+  // Listen for game state updates from server
+  useEffect(() => {
+    socket.on('gameState', (newState) => {
+      setState(prev => ({
+        ...prev,
+        ...newState
+      }));
+    });
+
+    return () => {
+      socket.off('gameState');
+    };
+  }, []);
+
   // Update state when settings change
   useEffect(() => {
     const settings = loadSettings();
@@ -40,59 +58,58 @@ export function useGameState(initialMargin: number = 5) {
     }));
   }, []);
 
+  const updateServerState = useCallback((updates: Partial<GameState>) => {
+    socket.emit('updateGameState', updates);
+  }, []);
+
   const rollDice = useCallback(() => {
     const firstDice = Math.floor(Math.random() * 6) + 1;
     const secondDice = Math.floor(Math.random() * 6) + 1;
     
-    // Determine which dice should be first (higher number)
     const [dice1, dice2] = firstDice >= secondDice 
       ? [firstDice, secondDice] 
       : [secondDice, firstDice];
     
     const targetWeight = Number(`${dice1}${dice2}`);
     
-    setState(prev => ({
-      ...prev,
+    updateServerState({
       dice1,
       dice2,
       targetWeight,
       phase: 'drinking',
-      attempts: 0, // Reset attempts when rolling new dice
-    }));
-  }, []);
+      attempts: 0,
+    });
+  }, [updateServerState]);
 
   const nextPhase = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      phase: prev.phase === 'drinking' ? 'measuring' : 'rolling',
-    }));
-  }, []);
+    updateServerState({
+      phase: state.phase === 'drinking' ? 'measuring' : 'rolling',
+    });
+  }, [state.phase, updateServerState]);
 
   const moveToNextPlayer = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+    updateServerState({
+      currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
       phase: 'rolling',
       dice1: 0,
       dice2: 0,
       attempts: 0,
-    }));
-  }, []);
+    });
+  }, [state.currentPlayerIndex, state.players.length, updateServerState]);
 
   const incrementAttempts = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      attempts: prev.attempts + 1,
-    }));
-  }, []);
+    updateServerState({
+      attempts: state.attempts + 1,
+    });
+  }, [state.attempts, updateServerState]);
 
   const setPlayers = useCallback((players: Player[]) => {
-    setState(prev => ({ ...prev, players }));
-  }, []);
+    updateServerState({ players });
+  }, [updateServerState]);
 
   const setMargin = useCallback((margin: number) => {
-    setState(prev => ({ ...prev, margin }));
-  }, []);
+    updateServerState({ margin });
+  }, [updateServerState]);
 
   return {
     state,

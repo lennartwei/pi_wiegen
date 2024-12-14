@@ -1,20 +1,48 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 from scale import Scale
 from battery import BatteryMonitor
 import json
 
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Initialize hardware
 scale = Scale()
 battery = BatteryMonitor()
 
+# Game state
+game_state = {
+    'currentPlayer': None,
+    'dice1': 0,
+    'dice2': 0,
+    'phase': 'rolling',
+    'attempts': 0,
+    'targetWeight': 0
+}
+
+def broadcast_state():
+    """Broadcast the current game state to all connected clients"""
+    socketio.emit('gameState', game_state)
+
+@socketio.on('connect')
+def handle_connect():
+    """Send current state to newly connected clients"""
+    emit('gameState', game_state)
+
+@socketio.on('updateGameState')
+def handle_state_update(new_state):
+    """Handle game state updates from clients"""
+    game_state.update(new_state)
+    broadcast_state()
+
 @app.route('/weight')
 def get_weight():
     try:
         weight = scale.get_weight()
+        socketio.emit('weight', {'weight': weight})  # Broadcast weight to all clients
         return jsonify({'weight': weight})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -23,6 +51,7 @@ def get_weight():
 def get_battery():
     try:
         status = battery.get_status()
+        socketio.emit('battery', status)  # Broadcast battery status to all clients
         return jsonify(status)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -80,7 +109,7 @@ def calibrate():
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5000)
+        socketio.run(app, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True, debug=True, use_reloader=False)
     finally:
         scale.cleanup()
         battery.cleanup()
