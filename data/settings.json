@@ -1,8 +1,11 @@
 {
-  "margin": 10,
+  "margin": 15,
   "players": [
+    "Winzer",
     "Lennart",
-    "Lars"
+    "Lars",
+    "Martin",
+    "Jonas"
   ],
   "maxRetries": 2,
   "scoring": {

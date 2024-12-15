@@ -24,6 +24,21 @@ export interface GameResult {
   isPerfect: boolean;
 }
 
+export interface PlayerGameResult {
+  playerName: string;
+  score: number;
+  perfectDrinks: number;
+  attempts: number;
+}
+
+export interface CompleteGameHistory {
+  id: string;
+  timestamp: number;
+  players: PlayerGameResult[];
+  winner: string;
+  totalPerfectDrinks: number;
+}
+
 export interface PlayerStats {
   name: string;
   games: number;
@@ -37,10 +52,4 @@ export interface PlayerStats {
   winRate: number;
   longestWinStreak: number;
   currentWinStreak: number;
-}
-
-export interface RoundScore {
-  score: number;
-  isPerfect: boolean;
-  deviation: number;
 }
