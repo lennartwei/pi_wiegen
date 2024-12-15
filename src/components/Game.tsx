@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Dice1, Scale, CheckCircle2, AlertTriangle, Keyboard } from 'lucide-react';
+import { ArrowLeft, Keyboard } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
@@ -8,6 +8,10 @@ import { loadSettings, updatePlayerStats } from '../utils/storage';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
 import RoundResult from './RoundResult';
 import AnimatedDice from './AnimatedDice';
+import GameTable from './game/GameTable';
+import GameControls from './game/GameControls';
+import GameStatus from './game/GameStatus';
+import KeyboardHelp from './game/KeyboardHelp';
 
 const BUTTON_COLORS = [
   { tare: 'bg-yellow-600 hover:bg-yellow-700', measure: 'bg-blue-600 hover:bg-blue-700' },
@@ -18,7 +22,7 @@ const BUTTON_COLORS = [
 function Game() {
   const navigate = useNavigate();
   const { state, rollDice, nextPhase, setPlayers, setMargin, incrementAttempts, moveToNextPlayer } = useGameState();
-  const { getWeight, tare, isLoading, error } = useScale();
+  const { getWeight, tare, isLoading, error: scaleError } = useScale();
   const [weight, setWeight] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
@@ -49,7 +53,6 @@ function Game() {
       await tare();
       setIsTared(true);
     } catch (error) {
-      console.error('Tare error:', error);
       setIsTared(false);
     }
   };
@@ -101,7 +104,6 @@ function Game() {
         }, 2000);
       }
     } catch (error) {
-      console.error('Measurement error:', error);
       setIsTared(false);
     }
   };
@@ -131,7 +133,7 @@ function Game() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-8 max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center w-full">
         <button
           onClick={() => navigate('/')}
@@ -148,137 +150,72 @@ function Game() {
         </button>
       </div>
 
-      {showControls && (
-        <div className="bg-black/20 backdrop-blur-sm p-4 rounded-lg text-sm">
-          <h3 className="font-bold mb-2">Keyboard Controls:</h3>
-          <ul className="space-y-1">
-            <li>
-              <kbd className="px-2 py-1 bg-white/10 rounded">Space</kbd>
-              {' '} Roll dice / Measure weight
-            </li>
-            <li>
-              <kbd className="px-2 py-1 bg-white/10 rounded">↑</kbd>
-              {' '} or {' '}
-              <kbd className="px-2 py-1 bg-white/10 rounded">↓</kbd>
-              {' '} Tare scale
-            </li>
-          </ul>
+      {scaleError && (
+        <div className="bg-red-500/20 p-4 rounded-lg w-full">
+          {scaleError}
         </div>
       )}
 
-      <div className="bg-white/10 p-6 rounded-lg w-full max-w-md">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl">
-            Player: {state.players[state.currentPlayerIndex]?.name}
-          </h2>
-          {state.phase === 'drinking' && (
-            <div className="text-sm opacity-75">
-              Attempt {state.attempts + 1}/{state.maxAttempts}
-            </div>
-          )}
+      {showControls && <KeyboardHelp />}
+
+      <div className="w-full flex flex-col items-center gap-8">
+        <GameStatus
+          currentPlayer={state.players[state.currentPlayerIndex]?.name}
+          attempts={state.attempts}
+          maxAttempts={state.maxAttempts}
+          phase={state.phase}
+          targetWeight={state.targetWeight}
+          margin={state.margin}
+        />
+
+        <div className="relative w-full aspect-square max-w-[600px]">
+          <GameTable
+            players={state.players}
+            currentPlayerIndex={state.currentPlayerIndex}
+          />
         </div>
 
-        {error && (
-          <div className="bg-red-500/20 p-4 rounded-lg mb-4">
-            {error}
-          </div>
-        )}
-
-        {state.phase === 'rolling' && (
-          <button
-            onClick={handleRollClick}
-            className="w-full bg-green-600 hover:bg-green-700 p-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-            disabled={isLoading || isRolling}
-          >
-            <Dice1 size={24} />
-            Roll Dice
-          </button>
-        )}
-
         {(state.dice1 > 0 && state.dice2 > 0) && (
-          <div className="flex justify-center gap-4 my-4">
+          <div className="flex justify-center gap-4">
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice1} 
                 onAnimationComplete={() => setIsRolling(false)} 
               />
-              <p className="text-center mt-2">{state.dice1}</p>
             </div>
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice2} 
                 onAnimationComplete={() => setIsRolling(false)} 
               />
-              <p className="text-center mt-2">{state.dice2}</p>
             </div>
           </div>
         )}
 
-        {state.phase === 'drinking' && (
-          <div className="text-center space-y-4">
-            <p className="text-lg mb-4">
-              Target: {state.targetWeight}g ±{state.margin}g
-            </p>
-            
-            <div className="space-y-4">
-              <div>
-                <button
-                  onClick={handleTare}
-                  className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2 mb-2
-                    ${isTared ? 'bg-green-600 hover:bg-green-700' : colors.tare}`}
-                  disabled={isLoading}
-                >
-                  {isTared ? <CheckCircle2 size={24} /> : <Scale size={24} />}
-                  {isTared ? 'Scale Tared' : 'Tare Scale'}
-                </button>
-                <div className={`flex items-center justify-center gap-2 text-sm
-                  ${isTared ? 'text-green-300' : 'text-yellow-300'}`}
-                >
-                  {isTared ? (
-                    <>
-                      <CheckCircle2 size={16} />
-                      Scale is ready for measurement
-                    </>
-                  ) : (
-                    'Place drink on scale and tare before measuring!'
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <button
-                  onClick={handleMeasure}
-                  className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2
-                    ${!isTared ? 'bg-gray-600 cursor-not-allowed' : colors.measure}`}
-                  disabled={isLoading || !isTared}
-                >
-                  <Scale size={24} />
-                  Measure Drink
-                </button>
-              </div>
-            </div>
-
-            {state.attempts > 0 && (
-              <div className="mt-4 text-yellow-300 flex items-center justify-center gap-2">
-                <AlertTriangle size={16} />
-                {state.maxAttempts - state.attempts} {state.maxAttempts - state.attempts === 1 ? 'try' : 'tries'} remaining
-              </div>
-            )}
-          </div>
-        )}
-
-        {showResult && (
-          <RoundResult 
-            isWin={isValidWeight(weight, state.targetWeight, state.margin)}
-            weight={weight}
-            targetWeight={state.targetWeight}
-            margin={state.margin}
-            attemptsLeft={state.maxAttempts - state.attempts - 1}
-            score={roundScore.score}
-            isPerfect={roundScore.isPerfect}
+        <div className="w-full max-w-md">
+          <GameControls
+            phase={state.phase}
+            isLoading={isLoading}
+            isTared={isTared}
+            onRoll={handleRollClick}
+            onTare={handleTare}
+            onMeasure={handleMeasure}
+            buttonColors={colors}
           />
-        )}
+        </div>
       </div>
+
+      {showResult && (
+        <RoundResult 
+          isWin={isValidWeight(weight, state.targetWeight, state.margin)}
+          weight={weight}
+          targetWeight={state.targetWeight}
+          margin={state.margin}
+          attemptsLeft={state.maxAttempts - state.attempts - 1}
+          score={roundScore.score}
+          isPerfect={roundScore.isPerfect}
+        />
+      )}
     </div>
   );
 }
