@@ -40,6 +40,17 @@ export function useGameState(initialMargin: number = 5) {
     }));
   }, []);
 
+  const updatePlayerScore = useCallback((score: number) => {
+    setState(prev => ({
+      ...prev,
+      players: prev.players.map((player, index) => 
+        index === prev.currentPlayerIndex
+          ? { ...player, score: player.score + score }
+          : player
+      )
+    }));
+  }, []);
+
   const rollDice = useCallback(() => {
     const firstDice = Math.floor(Math.random() * 6) + 1;
     const secondDice = Math.floor(Math.random() * 6) + 1;
@@ -102,5 +113,6 @@ export function useGameState(initialMargin: number = 5) {
     setPlayers,
     setMargin,
     incrementAttempts,
+    updatePlayerScore,
   };
 }

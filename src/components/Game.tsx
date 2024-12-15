@@ -6,12 +6,12 @@ import { useScale } from '../hooks/useScale';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
 import { loadSettings, updatePlayerStats } from '../utils/storage';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
+import GameTable from './game/GameTable';
+import GameStatus from './game/GameStatus';
+import GameControls from './game/GameControls';
+import KeyboardHelp from './game/KeyboardHelp';
 import RoundResult from './RoundResult';
 import AnimatedDice from './AnimatedDice';
-import GameTable from './game/GameTable';
-import GameControls from './game/GameControls';
-import GameStatus from './game/GameStatus';
-import KeyboardHelp from './game/KeyboardHelp';
 
 const BUTTON_COLORS = [
   { tare: 'bg-yellow-600 hover:bg-yellow-700', measure: 'bg-blue-600 hover:bg-blue-700' },
@@ -21,7 +21,7 @@ const BUTTON_COLORS = [
 
 function Game() {
   const navigate = useNavigate();
-  const { state, rollDice, nextPhase, setPlayers, setMargin, incrementAttempts, moveToNextPlayer } = useGameState();
+  const { state, rollDice, nextPhase, setPlayers, setMargin, incrementAttempts, moveToNextPlayer, updatePlayerScore } = useGameState();
   const { getWeight, tare, isLoading, error: scaleError } = useScale();
   const [weight, setWeight] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -53,6 +53,7 @@ function Game() {
       await tare();
       setIsTared(true);
     } catch (error) {
+      console.error('Tare error:', error);
       setIsTared(false);
     }
   };
@@ -71,6 +72,9 @@ function Game() {
       
       const currentPlayer = state.players[state.currentPlayerIndex];
       const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
+      
+      // Update player's score
+      updatePlayerScore(score.score);
       
       updatePlayerStats(currentPlayer.name, {
         score: score.score,
@@ -104,6 +108,7 @@ function Game() {
         }, 2000);
       }
     } catch (error) {
+      console.error('Measurement error:', error);
       setIsTared(false);
     }
   };
@@ -133,7 +138,7 @@ function Game() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 max-w-4xl mx-auto px-4 py-8">
+    <div className="flex flex-col items-center gap-6">
       <div className="flex items-center w-full">
         <button
           onClick={() => navigate('/')}
@@ -150,15 +155,22 @@ function Game() {
         </button>
       </div>
 
-      {scaleError && (
-        <div className="bg-red-500/20 p-4 rounded-lg w-full">
-          {scaleError}
-        </div>
-      )}
-
       {showControls && <KeyboardHelp />}
 
-      <div className="w-full flex flex-col items-center gap-8">
+      <div className="relative w-full aspect-square max-w-3xl">
+        <GameTable
+          players={state.players}
+          currentPlayerIndex={state.currentPlayerIndex}
+        />
+      </div>
+
+      <div className="w-full max-w-md space-y-4">
+        {scaleError && (
+          <div className="bg-red-500/20 p-4 rounded-lg">
+            {scaleError}
+          </div>
+        )}
+
         <GameStatus
           currentPlayer={state.players[state.currentPlayerIndex]?.name}
           attempts={state.attempts}
@@ -168,41 +180,34 @@ function Game() {
           margin={state.margin}
         />
 
-        <div className="relative w-full aspect-square max-w-[600px]">
-          <GameTable
-            players={state.players}
-            currentPlayerIndex={state.currentPlayerIndex}
-          />
-        </div>
-
         {(state.dice1 > 0 && state.dice2 > 0) && (
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4 my-4">
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice1} 
                 onAnimationComplete={() => setIsRolling(false)} 
               />
+              <p className="text-center mt-2">{state.dice1}</p>
             </div>
             <div className="bg-white/20 p-4 rounded-lg">
               <AnimatedDice 
                 value={state.dice2} 
                 onAnimationComplete={() => setIsRolling(false)} 
               />
+              <p className="text-center mt-2">{state.dice2}</p>
             </div>
           </div>
         )}
 
-        <div className="w-full max-w-md">
-          <GameControls
-            phase={state.phase}
-            isLoading={isLoading}
-            isTared={isTared}
-            onRoll={handleRollClick}
-            onTare={handleTare}
-            onMeasure={handleMeasure}
-            buttonColors={colors}
-          />
-        </div>
+        <GameControls
+          phase={state.phase}
+          isLoading={isLoading}
+          isTared={isTared}
+          onRoll={handleRollClick}
+          onTare={handleTare}
+          onMeasure={handleMeasure}
+          buttonColors={colors}
+        />
       </div>
 
       {showResult && (
