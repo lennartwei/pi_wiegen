@@ -2,59 +2,66 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Settings as SettingsIcon } from 'lucide-react';
 import { loadSettings, saveSettings } from '../utils/storage';
-import type { GameSettings } from '../types';
+import type { GameSettings, GameSettingPreset } from '../types';
+import SettingPresets from './settings/SettingPresets';
+import PresetEditor from './settings/PresetEditor';
+import PlayerManager from './settings/PlayerManager';
 
 function Settings() {
-  const [settings, setSettings] = useState<GameSettings>({
-    margin: 5,
-    maxRetries: 2,
-    players: [],
-    scoring: {
-      perfectScore: 1000,
-      marginPenalty: 100,
-      failurePenalty: 200,
-      minScore: -500
-    }
-  });
-  const [newPlayer, setNewPlayer] = useState('');
+  const [settings, setSettings] = useState<GameSettings>(() => loadSettings());
+  const [editingPreset, setEditingPreset] = useState<GameSettingPreset | undefined>();
+  const [showPresetEditor, setShowPresetEditor] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedSettings = loadSettings();
-    setSettings(savedSettings);
-  }, []);
+  const handlePresetSelect = (presetId: string) => {
+    setSettings(prev => ({
+      ...prev,
+      activePresetId: presetId
+    }));
+  };
 
-  const addPlayer = () => {
-    if (newPlayer.trim()) {
+  const handlePresetEdit = (preset: GameSettingPreset) => {
+    setEditingPreset(preset);
+    setShowPresetEditor(true);
+  };
+
+  const handlePresetCreate = () => {
+    setEditingPreset(undefined);
+    setShowPresetEditor(true);
+  };
+
+  const handlePresetSave = (preset: GameSettingPreset) => {
+    setSettings(prev => {
+      const existingIndex = prev.presets.findIndex(p => p.id === preset.id);
+      const newPresets = [...prev.presets];
+      
+      if (existingIndex >= 0) {
+        newPresets[existingIndex] = preset;
+      } else {
+        newPresets.push(preset);
+      }
+
+      return {
+        ...prev,
+        presets: newPresets
+      };
+    });
+    setShowPresetEditor(false);
+  };
+
+  const handlePlayerAdd = (name: string) => {
+    if (name.trim()) {
       setSettings(prev => ({
         ...prev,
-        players: [...prev.players, newPlayer.trim()]
+        players: [...prev.players, name.trim()]
       }));
-      setNewPlayer('');
     }
   };
 
-  const removePlayer = (index: number) => {
+  const handlePlayerRemove = (index: number) => {
     setSettings(prev => ({
       ...prev,
       players: prev.players.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleSettingChange = (key: keyof GameSettings, value: number) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
-  };
-
-  const handleScoringChange = (key: keyof GameSettings['scoring'], value: number) => {
-    setSettings(prev => ({
-      ...prev,
-      scoring: {
-        ...prev.scoring,
-        [key]: value
-      }
     }));
   };
 
@@ -75,128 +82,21 @@ function Settings() {
         <h1 className="text-2xl font-bold flex-1 text-center">Settings</h1>
       </div>
 
-      <div className="bg-white/10 p-6 rounded-lg w-full max-w-md space-y-6">
-        <div>
-          <label className="block mb-2">Weight Margin (±g)</label>
-          <input
-            type="number"
-            value={settings.margin}
-            onChange={(e) => handleSettingChange('margin', Number(e.target.value))}
-            min={1}
-            max={20}
-            className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
+      <div className="w-full max-w-4xl space-y-8 p-6 bg-white/10 rounded-lg">
+        <SettingPresets
+          presets={settings.presets}
+          activePresetId={settings.activePresetId}
+          onPresetSelect={handlePresetSelect}
+          onPresetEdit={handlePresetEdit}
+          onPresetCreate={handlePresetCreate}
+        />
+
+        <div className="border-t border-white/10 pt-8">
+          <PlayerManager
+            players={settings.players}
+            onPlayerAdd={handlePlayerAdd}
+            onPlayerRemove={handlePlayerRemove}
           />
-        </div>
-
-        <div>
-          <label className="block mb-2">Maximum Retries</label>
-          <input
-            type="number"
-            value={settings.maxRetries}
-            onChange={(e) => handleSettingChange('maxRetries', Number(e.target.value))}
-            min={1}
-            max={5}
-            className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
-          />
-          <p className="text-sm opacity-75 mt-1">
-            Number of attempts allowed before moving to next player
-          </p>
-        </div>
-
-        <div className="border-t border-white/10 pt-4">
-          <h3 className="text-lg font-semibold mb-4">Scoring Settings</h3>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block mb-2">Perfect Score</label>
-              <input
-                type="number"
-                value={settings.scoring.perfectScore}
-                onChange={(e) => handleScoringChange('perfectScore', Number(e.target.value))}
-                min={100}
-                max={10000}
-                step={100}
-                className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
-              />
-              <p className="text-sm opacity-75 mt-1">Points awarded for perfect match</p>
-            </div>
-
-            <div>
-              <label className="block mb-2">Margin Penalty</label>
-              <input
-                type="number"
-                value={settings.scoring.marginPenalty}
-                onChange={(e) => handleScoringChange('marginPenalty', Number(e.target.value))}
-                min={0}
-                max={1000}
-                step={10}
-                className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
-              />
-              <p className="text-sm opacity-75 mt-1">Points deducted per gram within margin</p>
-            </div>
-
-            <div>
-              <label className="block mb-2">Failure Penalty</label>
-              <input
-                type="number"
-                value={settings.scoring.failurePenalty}
-                onChange={(e) => handleScoringChange('failurePenalty', Number(e.target.value))}
-                min={0}
-                max={1000}
-                step={10}
-                className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
-              />
-              <p className="text-sm opacity-75 mt-1">Points deducted per gram outside margin</p>
-            </div>
-
-            <div>
-              <label className="block mb-2">Minimum Score</label>
-              <input
-                type="number"
-                value={settings.scoring.minScore}
-                onChange={(e) => handleScoringChange('minScore', Number(e.target.value))}
-                min={-1000}
-                max={0}
-                step={100}
-                className="w-full bg-white/20 p-2 rounded border border-white/30 text-white"
-              />
-              <p className="text-sm opacity-75 mt-1">Minimum possible score for a round</p>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label className="block mb-2">Players</label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              value={newPlayer}
-              onChange={(e) => setNewPlayer(e.target.value)}
-              className="flex-1 bg-white/20 p-2 rounded border border-white/30 text-white"
-              placeholder="Enter player name"
-              onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-            />
-            <button
-              onClick={addPlayer}
-              className="bg-green-600 hover:bg-green-700 px-4 rounded transition-colors"
-            >
-              Add
-            </button>
-          </div>
-
-          <ul className="space-y-2">
-            {settings.players.map((player, index) => (
-              <li key={index} className="flex justify-between items-center bg-white/20 p-2 rounded">
-                {player}
-                <button
-                  onClick={() => removePlayer(index)}
-                  className="text-red-400 hover:text-red-300 transition-colors"
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <button
@@ -207,6 +107,14 @@ function Settings() {
           Save Settings
         </button>
       </div>
+
+      {showPresetEditor && (
+        <PresetEditor
+          preset={editingPreset}
+          onSave={handlePresetSave}
+          onClose={() => setShowPresetEditor(false)}
+        />
+      )}
     </div>
   );
 }

@@ -4,14 +4,14 @@ import { ArrowLeft, Keyboard } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
-import { loadSettings, updatePlayerStats } from '../utils/storage';
+import { loadSettings } from '../utils/storage';
+import { updatePlayerStats } from '../utils/playerStats';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
-import GameTable from './game/GameTable';
-import GameStatus from './game/GameStatus';
-import GameControls from './game/GameControls';
-import KeyboardHelp from './game/KeyboardHelp';
 import RoundResult from './RoundResult';
-import AnimatedDice from './AnimatedDice';
+import GameTable from './game/GameTable';
+import GameControls from './game/GameControls';
+import GameStatus from './game/GameStatus';
+import KeyboardHelp from './game/KeyboardHelp';
 
 const BUTTON_COLORS = [
   { tare: 'bg-yellow-600 hover:bg-yellow-700', measure: 'bg-blue-600 hover:bg-blue-700' },
@@ -21,7 +21,17 @@ const BUTTON_COLORS = [
 
 function Game() {
   const navigate = useNavigate();
-  const { state, rollDice, nextPhase, setPlayers, setMargin, incrementAttempts, moveToNextPlayer, updatePlayerScore } = useGameState();
+  const { 
+    state, 
+    rollDice, 
+    nextPhase, 
+    setPlayers, 
+    setMargin, 
+    incrementAttempts, 
+    moveToNextPlayer,
+    updatePlayerScore 
+  } = useGameState();
+  
   const { getWeight, tare, isLoading, error: scaleError } = useScale();
   const [weight, setWeight] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -36,7 +46,10 @@ function Game() {
   useEffect(() => {
     const settings = loadSettings();
     setPlayers(settings.players.map(name => ({ name, score: 0 })));
-    setMargin(settings.margin);
+    const activePreset = settings.presets.find(p => p.id === settings.activePresetId);
+    if (activePreset) {
+      setMargin(activePreset.margin);
+    }
   }, [setPlayers, setMargin]);
 
   useEffect(() => {
@@ -67,16 +80,17 @@ function Game() {
       setWeight(measuredWeight);
       
       const settings = loadSettings();
-      const score = calculateScore(measuredWeight, state.targetWeight, settings);
+      const activePreset = settings.presets.find(p => p.id === settings.activePresetId);
+      if (!activePreset) return;
+      
+      const score = calculateScore(measuredWeight, state.targetWeight, activePreset);
       setRoundScore(score);
+      updatePlayerScore(score.score);
       
       const currentPlayer = state.players[state.currentPlayerIndex];
       const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
       
-      // Update player's score
-      updatePlayerScore(score.score);
-      
-      updatePlayerStats(currentPlayer.name, {
+      await updatePlayerStats(currentPlayer.name, {
         score: score.score,
         deviation: score.deviation,
         targetWeight: state.targetWeight,
@@ -113,7 +127,6 @@ function Game() {
     }
   };
 
-  // Set up keyboard controls
   useKeyboardControls({
     onRoll: handleRollClick,
     onTare: handleTare,
@@ -157,8 +170,8 @@ function Game() {
 
       {showControls && <KeyboardHelp />}
 
-      <div className="relative w-full aspect-square max-w-3xl">
-        <GameTable
+      <div className="relative w-full aspect-square max-w-3xl mb-8">
+        <GameTable 
           players={state.players}
           currentPlayerIndex={state.currentPlayerIndex}
         />
@@ -172,32 +185,13 @@ function Game() {
         )}
 
         <GameStatus
-          currentPlayer={state.players[state.currentPlayerIndex]?.name}
+          currentPlayer={state.players[state.currentPlayerIndex].name}
           attempts={state.attempts}
           maxAttempts={state.maxAttempts}
           phase={state.phase}
           targetWeight={state.targetWeight}
           margin={state.margin}
         />
-
-        {(state.dice1 > 0 && state.dice2 > 0) && (
-          <div className="flex justify-center gap-4 my-4">
-            <div className="bg-white/20 p-4 rounded-lg">
-              <AnimatedDice 
-                value={state.dice1} 
-                onAnimationComplete={() => setIsRolling(false)} 
-              />
-              <p className="text-center mt-2">{state.dice1}</p>
-            </div>
-            <div className="bg-white/20 p-4 rounded-lg">
-              <AnimatedDice 
-                value={state.dice2} 
-                onAnimationComplete={() => setIsRolling(false)} 
-              />
-              <p className="text-center mt-2">{state.dice2}</p>
-            </div>
-          </div>
-        )}
 
         <GameControls
           phase={state.phase}

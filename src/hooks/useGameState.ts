@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Player } from '../types';
-import { loadSettings } from '../utils/storage';
+import { loadSettings, getActivePreset } from '../utils/storage';
 
 export interface GameState {
   players: Player[];
@@ -14,29 +14,30 @@ export interface GameState {
   maxAttempts: number;
 }
 
-export function useGameState(initialMargin: number = 5) {
+export function useGameState() {
   const [state, setState] = useState<GameState>(() => {
     const settings = loadSettings();
+    const activePreset = getActivePreset(settings);
     return {
       players: [],
       currentPlayerIndex: 0,
       dice1: 0,
       dice2: 0,
       targetWeight: 0,
-      margin: settings.margin,
+      margin: activePreset.margin,
       phase: 'rolling',
       attempts: 0,
-      maxAttempts: settings.maxRetries,
+      maxAttempts: activePreset.maxRetries,
     };
   });
 
-  // Update state when settings change
   useEffect(() => {
     const settings = loadSettings();
+    const activePreset = getActivePreset(settings);
     setState(prev => ({
       ...prev,
-      margin: settings.margin,
-      maxAttempts: settings.maxRetries
+      margin: activePreset.margin,
+      maxAttempts: activePreset.maxRetries
     }));
   }, []);
 
@@ -54,8 +55,6 @@ export function useGameState(initialMargin: number = 5) {
   const rollDice = useCallback(() => {
     const firstDice = Math.floor(Math.random() * 6) + 1;
     const secondDice = Math.floor(Math.random() * 6) + 1;
-    
-    // Determine which dice should be first (higher number)
     const [dice1, dice2] = firstDice >= secondDice 
       ? [firstDice, secondDice] 
       : [secondDice, firstDice];
@@ -68,7 +67,7 @@ export function useGameState(initialMargin: number = 5) {
       dice2,
       targetWeight,
       phase: 'drinking',
-      attempts: 0, // Reset attempts when rolling new dice
+      attempts: 0,
     }));
   }, []);
 

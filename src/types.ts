@@ -3,16 +3,24 @@ export interface Player {
   score: number;
 }
 
-export interface GameSettings {
+export interface GameSettingPreset {
+  id: string;
+  name: string;
+  description: string;
   margin: number;
-  players: string[];
   maxRetries: number;
   scoring: {
-    perfectScore: number;     // Points for perfect match (0 deviation)
-    marginPenalty: number;    // Points deducted per gram within margin
-    failurePenalty: number;   // Points deducted per gram outside margin
-    minScore: number;         // Minimum score possible for a round
+    perfectScore: number;
+    marginPenalty: number;
+    failurePenalty: number;
+    minScore: number;
   };
+}
+
+export interface GameSettings {
+  activePresetId: string;
+  presets: GameSettingPreset[];
+  players: string[];
 }
 
 export interface GameResult {
