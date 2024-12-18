@@ -6,9 +6,10 @@ interface PlayerSeatProps {
   player: Player;
   isActive: boolean;
   rank: number;
+  position: 'left' | 'right';
 }
 
-function PlayerSeat({ player, isActive, rank }: PlayerSeatProps) {
+function PlayerSeat({ player, isActive, rank, position }: PlayerSeatProps) {
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1: return 'text-yellow-400';
@@ -29,16 +30,16 @@ function PlayerSeat({ player, isActive, rank }: PlayerSeatProps) {
 
   return (
     <div className={`
-      -translate-x-1/2 -translate-y-1/2
-      flex flex-col items-center
+      flex items-center gap-4
+      ${position === 'right' ? 'flex-row-reverse' : 'flex-row'}
       ${isActive ? 'scale-110' : 'scale-100'}
       transition-all duration-300
     `}>
       {/* Avatar Container */}
-      <div className="relative mb-2">
+      <div className="relative">
         {/* Rank Badge */}
         {rank <= 3 && (
-          <div className={`absolute -top-1 -right-1 w-6 h-6 rounded-full 
+          <div className={`absolute -top-1 ${position === 'right' ? '-left-1' : '-right-1'} w-6 h-6 rounded-full 
             flex items-center justify-center z-10
             ${getRankColor(rank)} bg-gray-900/90 shadow-lg`}
           >
@@ -65,10 +66,10 @@ function PlayerSeat({ player, isActive, rank }: PlayerSeatProps) {
       </div>
       
       {/* Name and Score Stack */}
-      <div className="flex flex-col items-center gap-1">
+      <div className={`flex flex-col gap-1 ${position === 'right' ? 'items-end' : 'items-start'}`}>
         {/* Name Tag */}
         <div className={`
-          px-4 py-1 rounded-full text-sm font-medium
+          px-4 py-1 rounded-full text-sm font-medium whitespace-nowrap
           ${isActive 
             ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' 
             : 'bg-gray-800 text-gray-300'}

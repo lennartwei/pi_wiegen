@@ -39,9 +39,7 @@ function Game() {
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [showControls, setShowControls] = useState(false);
-
-  // Get the current color scheme based on attempts
-  const colors = BUTTON_COLORS[state.attempts % BUTTON_COLORS.length];
+  const [colors, setColors] = useState(BUTTON_COLORS[0]);
 
   useEffect(() => {
     const settings = loadSettings();
@@ -54,11 +52,15 @@ function Game() {
 
   useEffect(() => {
     setIsTared(false);
+    setColors(BUTTON_COLORS[state.attempts % BUTTON_COLORS.length]);
   }, [state.phase, state.currentPlayerIndex, state.attempts]);
 
-  const handleRollClick = () => {
+  const handleRollClick = async () => {
     setIsRolling(true);
     rollDice();
+    setTimeout(() => {
+      setIsRolling(false);
+    }, 1500);
   };
 
   const handleTare = async () => {
@@ -151,8 +153,8 @@ function Game() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="flex items-center w-full">
+    <div className="flex flex-col items-center gap-4 p-4">
+      <div className="flex items-center w-full max-w-4xl">
         <button
           onClick={() => navigate('/')}
           className="text-white hover:text-gray-300 transition-colors"
@@ -168,16 +170,23 @@ function Game() {
         </button>
       </div>
 
-      {showControls && <KeyboardHelp />}
+      {showControls && (
+        <div className="w-full max-w-4xl">
+          <KeyboardHelp />
+        </div>
+      )}
 
-      <div className="relative w-full aspect-square max-w-3xl mb-8">
+      <div className="relative w-full max-w-4xl aspect-[16/9]">
         <GameTable 
           players={state.players}
           currentPlayerIndex={state.currentPlayerIndex}
+          dice1={state.dice1}
+          dice2={state.dice2}
+          phase={state.phase}
         />
       </div>
 
-      <div className="w-full max-w-md space-y-4">
+      <div className="w-full max-w-md space-y-3">
         {scaleError && (
           <div className="bg-red-500/20 p-4 rounded-lg">
             {scaleError}
