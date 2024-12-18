@@ -2,44 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Keyboard } from 'lucide-react';
 import { useGameState } from '../hooks/useGameState';
-import { useScale } from '../hooks/useScale';
+import { useGameRound } from '../hooks/useGameRound';
+import { useRollAnimation } from '../hooks/useRollAnimation';
 import { useKeyboardControls } from '../hooks/useKeyboardControls';
 import { loadSettings } from '../utils/storage';
-import { updatePlayerStats } from '../utils/playerStats';
-import { isValidWeight, calculateScore } from '../utils/gameLogic';
 import RoundResult from './RoundResult';
 import GameTable from './game/GameTable';
 import GameControls from './game/GameControls';
 import GameStatus from './game/GameStatus';
 import KeyboardHelp from './game/KeyboardHelp';
-
-const BUTTON_COLORS = [
-  { tare: 'bg-yellow-600 hover:bg-yellow-700', measure: 'bg-blue-600 hover:bg-blue-700' },
-  { tare: 'bg-purple-600 hover:bg-purple-700', measure: 'bg-pink-600 hover:bg-pink-700' },
-  { tare: 'bg-orange-600 hover:bg-orange-700', measure: 'bg-cyan-600 hover:bg-cyan-700' },
-];
+import { BUTTON_COLORS } from '../constants/gameColors';
 
 function Game() {
   const navigate = useNavigate();
+  const [showControls, setShowControls] = useState(false);
+  const [colors, setColors] = useState(BUTTON_COLORS[0]);
+
   const { 
     state, 
     rollDice, 
-    nextPhase, 
     setPlayers, 
     setMargin, 
     incrementAttempts, 
     moveToNextPlayer,
     updatePlayerScore 
   } = useGameState();
-  
-  const { getWeight, tare, isLoading, error: scaleError } = useScale();
-  const [weight, setWeight] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
-  const [isTared, setIsTared] = useState(false);
-  const [isRolling, setIsRolling] = useState(false);
-  const [showControls, setShowControls] = useState(false);
-  const [colors, setColors] = useState(BUTTON_COLORS[0]);
+
+  const {
+    weight,
+    showResult,
+    roundScore,
+    isTared,
+    isLoading,
+    scaleError,
+    handleTare,
+    handleMeasure,
+    setShowResult
+  } = useGameRound(state, moveToNextPlayer, incrementAttempts, updatePlayerScore);
+
+  const { isRolling, handleRollClick } = useRollAnimation();
 
   useEffect(() => {
     const settings = loadSettings();
@@ -51,86 +52,11 @@ function Game() {
   }, [setPlayers, setMargin]);
 
   useEffect(() => {
-    setIsTared(false);
     setColors(BUTTON_COLORS[state.attempts % BUTTON_COLORS.length]);
   }, [state.phase, state.currentPlayerIndex, state.attempts]);
 
-  const handleRollClick = async () => {
-    setIsRolling(true);
-    rollDice();
-    setTimeout(() => {
-      setIsRolling(false);
-    }, 1500);
-  };
-
-  const handleTare = async () => {
-    try {
-      await tare();
-      setIsTared(true);
-    } catch (error) {
-      console.error('Tare error:', error);
-      setIsTared(false);
-    }
-  };
-
-  const handleMeasure = async () => {
-    if (!isTared) return;
-
-    try {
-      const measured = await getWeight(true);
-      const measuredWeight = Math.abs(measured);
-      setWeight(measuredWeight);
-      
-      const settings = loadSettings();
-      const activePreset = settings.presets.find(p => p.id === settings.activePresetId);
-      if (!activePreset) return;
-      
-      const score = calculateScore(measuredWeight, state.targetWeight, activePreset);
-      setRoundScore(score);
-      updatePlayerScore(score.score);
-      
-      const currentPlayer = state.players[state.currentPlayerIndex];
-      const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
-      
-      await updatePlayerStats(currentPlayer.name, {
-        score: score.score,
-        deviation: score.deviation,
-        targetWeight: state.targetWeight,
-        actualWeight: measuredWeight,
-        timestamp: Date.now(),
-        isPerfect: score.isPerfect
-      });
-      
-      setShowResult(true);
-      
-      if (isWin) {
-        setTimeout(() => {
-          setShowResult(false);
-          moveToNextPlayer();
-          setWeight(0);
-          setIsTared(false);
-        }, 2000);
-      } else {
-        incrementAttempts();
-        const isLastAttempt = state.attempts + 1 >= state.maxAttempts;
-        
-        setTimeout(() => {
-          setShowResult(false);
-          if (isLastAttempt) {
-            moveToNextPlayer();
-            setWeight(0);
-          }
-          setIsTared(false);
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Measurement error:', error);
-      setIsTared(false);
-    }
-  };
-
   useKeyboardControls({
-    onRoll: handleRollClick,
+    onRoll: () => handleRollClick(rollDice),
     onTare: handleTare,
     onMeasure: handleMeasure,
     canRoll: state.phase === 'rolling' && !isLoading && !isRolling,
@@ -183,6 +109,8 @@ function Game() {
           dice1={state.dice1}
           dice2={state.dice2}
           phase={state.phase}
+          onRoll={state.phase === 'rolling' ? () => handleRollClick(rollDice) : undefined}
+          isRolling={isRolling}
         />
       </div>
 
@@ -202,20 +130,21 @@ function Game() {
           margin={state.margin}
         />
 
-        <GameControls
-          phase={state.phase}
-          isLoading={isLoading}
-          isTared={isTared}
-          onRoll={handleRollClick}
-          onTare={handleTare}
-          onMeasure={handleMeasure}
-          buttonColors={colors}
-        />
+        {state.phase === 'drinking' && (
+          <GameControls
+            phase={state.phase}
+            isLoading={isLoading}
+            isTared={isTared}
+            onTare={handleTare}
+            onMeasure={handleMeasure}
+            buttonColors={colors}
+          />
+        )}
       </div>
 
       {showResult && (
         <RoundResult 
-          isWin={isValidWeight(weight, state.targetWeight, state.margin)}
+          isWin={weight <= state.targetWeight + state.margin && weight >= state.targetWeight - state.margin}
           weight={weight}
           targetWeight={state.targetWeight}
           margin={state.margin}

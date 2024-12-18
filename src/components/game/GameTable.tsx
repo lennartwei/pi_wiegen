@@ -3,6 +3,7 @@ import { User } from 'lucide-react';
 import { Player } from '../../types';
 import PlayerSeat from './PlayerSeat';
 import DiceDisplay from './DiceDisplay';
+import TableControls from './TableControls';
 
 interface GameTableProps {
   players: Player[];
@@ -10,24 +11,35 @@ interface GameTableProps {
   dice1?: number;
   dice2?: number;
   phase: 'rolling' | 'drinking' | 'measuring';
+  onRoll?: () => void;
+  isRolling?: boolean;
 }
 
-function GameTable({ players, currentPlayerIndex, dice1, dice2, phase }: GameTableProps) {
-  // Calculate table size based on player count
+function GameTable({ 
+  players, 
+  currentPlayerIndex, 
+  dice1, 
+  dice2, 
+  phase,
+  onRoll,
+  isRolling 
+}: GameTableProps) {
   const getTableSize = (playerCount: number) => {
     if (playerCount <= 6) return { width: 60, height: 70 };
     if (playerCount <= 8) return { width: 55, height: 65 };
-    return { width: 50, height: 60 }; // Smaller table for larger groups
+    if (playerCount <= 12) return { width: 50, height: 60 };
+    return { width: 45, height: 55 }; // For very large groups
   };
 
-  // Calculate positions for players around the table
   const getPlayerPosition = (index: number, total: number) => {
-    const angle = (index * 360) / total - 90; // Start from top
+    // Adjust spacing for larger groups
+    const angleOffset = total > 12 ? -60 : -90; // Start from top for larger groups
+    const angle = (index * (total > 12 ? 300 : 360) / total) + angleOffset;
     const isLeftSide = angle > 90 && angle < 270;
     
     // Adjust radius based on player count
-    let radiusX = total <= 6 ? 46 : total <= 8 ? 52 : 58;
-    let radiusY = total <= 6 ? 42 : total <= 8 ? 48 : 54;
+    let radiusX = total <= 6 ? 46 : total <= 8 ? 52 : total <= 12 ? 58 : 64;
+    let radiusY = total <= 6 ? 42 : total <= 8 ? 48 : total <= 12 ? 54 : 60;
 
     const x = Math.cos((angle * Math.PI) / 180) * radiusX;
     const y = Math.sin((angle * Math.PI) / 180) * radiusY;
@@ -35,7 +47,6 @@ function GameTable({ players, currentPlayerIndex, dice1, dice2, phase }: GameTab
     return { x, y, position: isLeftSide ? 'left' : 'right' };
   };
 
-  // Sort players by score to determine rankings
   const playerRankings = [...players]
     .sort((a, b) => b.score - a.score)
     .reduce((acc, player, index) => {
@@ -73,13 +84,17 @@ function GameTable({ players, currentPlayerIndex, dice1, dice2, phase }: GameTab
         {/* Table Shine Effect */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/5 to-transparent" />
 
-        {/* Dice Display */}
+        {/* Center Content */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <DiceDisplay
-            dice1={dice1}
-            dice2={dice2}
-            phase={phase}
-          />
+          {phase === 'rolling' ? (
+            <TableControls onRoll={onRoll} isRolling={isRolling} />
+          ) : (
+            <DiceDisplay
+              dice1={dice1}
+              dice2={dice2}
+              phase={phase}
+            />
+          )}
         </div>
       </div>
       
