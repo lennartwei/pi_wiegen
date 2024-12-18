@@ -1,8 +1,10 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { DuelState } from '../../types';
 
 interface GameStatusProps {
   currentPlayer: string;
+  duel: DuelState | null;
   attempts: number;
   maxAttempts: number;
   phase: 'rolling' | 'drinking' | 'measuring';
@@ -12,6 +14,7 @@ interface GameStatusProps {
 
 function GameStatus({
   currentPlayer,
+  duel,
   attempts,
   maxAttempts,
   phase,
@@ -22,7 +25,19 @@ function GameStatus({
     <div className="bg-white/10 p-4 rounded-lg space-y-2">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">
-          {currentPlayer}'s Turn
+          {duel ? (
+            <span className="flex items-center gap-2">
+              <span className={duel.currentTurn === 'challenger' ? 'text-red-400' : ''}>
+                {duel.challenger}
+              </span>
+              <span className="text-sm opacity-75">vs</span>
+              <span className={duel.currentTurn === 'opponent' ? 'text-red-400' : ''}>
+                {duel.opponent}
+              </span>
+            </span>
+          ) : (
+            `${currentPlayer}'s Turn`
+          )}
         </h2>
         {phase === 'drinking' && (
           <div className="text-sm opacity-75">

@@ -11,12 +11,14 @@ import GameTable from './game/GameTable';
 import GameControls from './game/GameControls';
 import GameStatus from './game/GameStatus';
 import KeyboardHelp from './game/KeyboardHelp';
+import DuelAnnouncement from './game/DuelAnnouncement';
 import { BUTTON_COLORS } from '../constants/gameColors';
 
 function Game() {
   const navigate = useNavigate();
   const [showControls, setShowControls] = useState(false);
   const [colors, setColors] = useState(BUTTON_COLORS[0]);
+  const [showDuelAnnouncement, setShowDuelAnnouncement] = useState(false);
 
   const { 
     state, 
@@ -25,7 +27,8 @@ function Game() {
     setMargin, 
     incrementAttempts, 
     moveToNextPlayer,
-    updatePlayerScore 
+    updatePlayerScore,
+    updateDuelWeight
   } = useGameState();
 
   const {
@@ -39,6 +42,17 @@ function Game() {
     handleMeasure,
     setShowResult
   } = useGameRound(state, moveToNextPlayer, incrementAttempts, updatePlayerScore);
+
+  // Show duel announcement for 3 seconds when it starts
+  useEffect(() => {
+    if (state.duel?.isActive && !state.duel.challengerWeight && !state.duel.opponentWeight) {
+      setShowDuelAnnouncement(true);
+      const timer = setTimeout(() => {
+        setShowDuelAnnouncement(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [state.duel]);
 
   const { isRolling, handleRollClick } = useRollAnimation();
 
@@ -123,6 +137,7 @@ function Game() {
 
         <GameStatus
           currentPlayer={state.players[state.currentPlayerIndex].name}
+          duel={state.duel}
           attempts={state.attempts}
           maxAttempts={state.maxAttempts}
           phase={state.phase}
@@ -141,6 +156,14 @@ function Game() {
           />
         )}
       </div>
+
+      {/* Duel Announcement */}
+      {showDuelAnnouncement && (
+        <DuelAnnouncement
+          player1={state.duel.challenger}
+          player2={state.duel.opponent}
+        />
+      )}
 
       {showResult && (
         <RoundResult 

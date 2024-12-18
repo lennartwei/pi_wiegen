@@ -1,7 +1,7 @@
 import React from 'react';
 import { Check, AlertCircle } from 'lucide-react';
 
-interface RoundResultProps {
+interface RoundResultProps extends React.PropsWithChildren {
   isWin: boolean;
   weight: number;
   targetWeight: number;
@@ -9,6 +9,8 @@ interface RoundResultProps {
   attemptsLeft: number;
   score: number;
   isPerfect: boolean;
+  isDuel?: boolean;
+  isFirstDuelPlayer?: boolean;
 }
 
 function RoundResult({ 
@@ -18,13 +20,27 @@ function RoundResult({
   margin, 
   attemptsLeft,
   score,
-  isPerfect
+  isPerfect,
+  isDuel,
+  isFirstDuelPlayer
 }: RoundResultProps) {
   const difference = Math.abs(weight - targetWeight);
   const differenceText = isPerfect
     ? 'Perfect drink!' 
     : `${difference.toFixed(1)}g ${weight > targetWeight ? 'too much' : 'too little'}`;
 
+  // Special message for first duel player
+  if (isDuel && isFirstDuelPlayer) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <div className="bg-blue-900/90 p-8 rounded-lg text-center transform animate-bounce">
+          <h2 className="text-2xl font-bold mb-4">First Duel Round Complete!</h2>
+          <p className="text-lg mb-2">Weight: {weight.toFixed(1)}g</p>
+          <p className="opacity-80">Get ready {state.duel?.opponent}...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={`fixed inset-0 flex items-center justify-center bg-black/50 z-50`}>
       <div className={`

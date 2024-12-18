@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Player } from '../types';
+import { Player, DuelState } from '../types';
 import { loadSettings, getActivePreset } from '../utils/storage';
 
 export interface GameState {
@@ -12,6 +12,7 @@ export interface GameState {
   phase: 'rolling' | 'drinking' | 'measuring';
   attempts: number;
   maxAttempts: number;
+  duel: DuelState | null;
 }
 
 export function useGameState() {
@@ -28,6 +29,7 @@ export function useGameState() {
       phase: 'rolling',
       attempts: 0,
       maxAttempts: activePreset.maxRetries,
+      duel: null,
     };
   });
 
@@ -53,23 +55,51 @@ export function useGameState() {
   }, []);
 
   const rollDice = useCallback(() => {
-    const firstDice = Math.floor(Math.random() * 6) + 1;
-    const secondDice = Math.floor(Math.random() * 6) + 1;
-    const [dice1, dice2] = firstDice >= secondDice 
-      ? [firstDice, secondDice] 
-      : [secondDice, firstDice];
+    const firstDice = 1;
+    const secondDice = 1;
+    const dice1 = firstDice >= secondDice ? firstDice : secondDice;
+    const dice2 = firstDice >= secondDice ? secondDice : firstDice;
     
     const targetWeight = Number(`${dice1}${dice2}`);
     
-    setState(prev => ({
-      ...prev,
-      dice1,
-      dice2,
-      targetWeight,
-      phase: 'drinking',
-      attempts: 0,
-    }));
-  }, []);
+    setState(prev => {
+      // Check for doubles and initiate duel
+      const isDuel = dice1 === dice2;
+      if (isDuel && prev.players.length > 1) {
+        const availableOpponents = prev.players
+          .filter((_, i) => i !== prev.currentPlayerIndex);
+        
+        if (availableOpponents.length > 0) {
+          const opponent = availableOpponents[Math.floor(Math.random() * availableOpponents.length)];
+          return {
+            ...prev,
+            dice1,
+            dice2,
+            targetWeight,
+            phase: 'drinking',
+            attempts: 0,
+            duel: {
+              isActive: true,
+              challenger: prev.players[prev.currentPlayerIndex].name,
+              opponent: opponent.name,
+              challengerWeight: null,
+              opponentWeight: null,
+              currentTurn: 'challenger'
+            }
+          };
+        }
+      }
+
+      return {
+        ...prev,
+        dice1,
+        dice2,
+        targetWeight,
+        phase: 'drinking',
+        attempts: 0
+      };
+    });
+  }, [state.players, state.currentPlayerIndex]);
 
   const nextPhase = useCallback(() => {
     setState(prev => ({
@@ -79,14 +109,45 @@ export function useGameState() {
   }, []);
 
   const moveToNextPlayer = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
-      phase: 'rolling',
-      dice1: 0,
-      dice2: 0,
-      attempts: 0,
-    }));
+    setState(prev => {
+      // Handle duel mode transitions
+      if (prev.duel?.isActive) {
+        // Move from challenger to opponent
+        if (prev.duel.currentTurn === 'challenger' && !prev.duel.opponentWeight) {
+          const opponentIndex = prev.players.findIndex(p => p.name === prev.duel?.opponent);
+          return {
+            ...prev,
+            currentPlayerIndex: opponentIndex,
+            duel: {
+              ...prev.duel,
+              currentTurn: 'opponent'
+            }
+          };
+        } else {
+          // Both players have measured or something went wrong - end duel
+          return {
+            ...prev,
+            currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+            phase: 'rolling',
+            dice1: 0,
+            dice2: 0,
+            attempts: 0,
+            duel: null,
+          };
+        }
+      }
+      
+      // Normal game mode transition
+      return {
+        ...prev,
+        currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
+        phase: 'rolling',
+        dice1: 0,
+        dice2: 0,
+        attempts: 0,
+        duel: null
+      };
+    });
   }, []);
 
   const incrementAttempts = useCallback(() => {
@@ -104,6 +165,20 @@ export function useGameState() {
     setState(prev => ({ ...prev, margin }));
   }, []);
 
+  const updateDuelWeight = useCallback((weight: number) => {
+    setState(prev => {
+      if (!prev.duel) return prev;
+      const isChallenger = prev.duel.currentTurn === 'challenger';
+      const updatedDuel = {
+        ...prev.duel,
+        challengerWeight: isChallenger ? weight : prev.duel.challengerWeight,
+        opponentWeight: !isChallenger ? weight : prev.duel.opponentWeight
+      };
+
+      return { ...prev, duel: updatedDuel };
+    });
+  }, []);
+
   return {
     state,
     rollDice,
@@ -113,5 +188,6 @@ export function useGameState() {
     setMargin,
     incrementAttempts,
     updatePlayerScore,
+    updateDuelWeight,
   };
 }

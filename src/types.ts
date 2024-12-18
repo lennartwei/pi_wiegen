@@ -17,6 +17,15 @@ export interface GameSettingPreset {
   };
 }
 
+export interface DuelState {
+  isActive: boolean;
+  challenger: string;
+  opponent: string;
+  challengerWeight: number | null;
+  opponentWeight: number | null;
+  currentTurn: 'challenger' | 'opponent';
+}
+
 export interface GameSettings {
   activePresetId: string;
   presets: GameSettingPreset[];

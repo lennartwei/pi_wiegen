@@ -30,28 +30,64 @@ export function useGameRound(state: GameState, moveToNextPlayer: () => void, inc
 
   const handleMeasure = async () => {
     if (!isTared) return;
-
     try {
       const measured = await getWeight(true);
-      const measuredWeight = Math.abs(measured);
-      setWeight(measuredWeight);
+      const finalWeight = Math.abs(measured);
+      setWeight(finalWeight);
+
+      if (state.duel?.isActive) {
+        // Update duel weights
+        state.updateDuelWeight(finalWeight);
+
+        // Check if both players have measured
+        if (state.duel.challengerWeight && state.duel.opponentWeight) {
+          // Show final duel result
+          setShowResult(true);
+          const challengerDelta = Math.abs(state.duel.challengerWeight - state.targetWeight);
+          const opponentDelta = Math.abs(state.duel.opponentWeight - state.targetWeight);
+          const score = challengerDelta <= opponentDelta ? 1000 : -500;
+          updatePlayerScore(score);
+
+          // Move to next player after showing result
+          setTimeout(() => {
+            setShowResult(false);
+            moveToNextPlayer();
+            setWeight(0);
+            setIsTared(false);
+          }, 2000);
+          return;
+        }
+
+        // First player finished - show intermediate result
+        setShowResult(true);
+        setTimeout(() => {
+          setShowResult(false);
+          moveToNextPlayer();
+          setWeight(0);
+          setIsTared(false);
+        }, 3000);
+        return;
+      }
+      
+      // Normal game mode handling
+      setShowResult(true);
       
       const settings = loadSettings();
       const activePreset = settings.presets.find(p => p.id === settings.activePresetId);
       if (!activePreset) return;
       
-      const score = calculateScore(measuredWeight, state.targetWeight, activePreset);
+      const score = calculateScore(finalWeight, state.targetWeight, activePreset);
       setRoundScore(score);
       updatePlayerScore(score.score);
       
       const currentPlayer = state.players[state.currentPlayerIndex];
-      const isWin = isValidWeight(measuredWeight, state.targetWeight, state.margin);
+      const isWin = isValidWeight(finalWeight, state.targetWeight, state.margin);
       
       await updatePlayerStats(currentPlayer.name, {
         score: score.score,
         deviation: score.deviation,
         targetWeight: state.targetWeight,
-        actualWeight: measuredWeight,
+        actualWeight: finalWeight,
         timestamp: Date.now(),
         isPerfect: score.isPerfect
       });
