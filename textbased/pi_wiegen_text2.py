@@ -15,7 +15,7 @@ game = game()
 def main():
     hx = HX711(5, 6)
     hx.set_reading_format("MSB", "MSB")
-    referenceUnit = -320795.0 / 803.2
+    referenceUnit = -148062.5 / 358#-320795.0 / 803.2
     hx.set_reference_unit(referenceUnit)
     hx.reset()
     hx.tare()

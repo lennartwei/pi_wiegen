@@ -23,7 +23,7 @@ function WeightDisplay() {
 
     // Update weight every 2 seconds
     updateWeight();
-    intervalId = setInterval(updateWeight, 2000);
+    intervalId = setInterval(updateWeight, 800);
 
     return () => {
       isMounted = false;

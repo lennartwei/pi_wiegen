@@ -1,21 +1,14 @@
 {
-  "margin": 15,
+  "activePresetId": "beginner",
+  "margin": 5,
   "maxRetries": 2,
   "numReadings": 5,
   "players": [
-    "Winzer",
     "Lennart",
     "Lars",
     "Martin",
     "Jonas"
   ],
-  "scoring": {
-    "failurePenalty": 200,
-    "marginPenalty": 100,
-    "minScore": -500,
-    "perfectScore": 1000
-  },
-  "activePresetId": "standard",
   "presets": [
     {
       "id": "beginner",
@@ -56,5 +49,11 @@
         "minScore": -1000
       }
     }
-  ]
+  ],
+  "scoring": {
+    "failurePenalty": 200,
+    "marginPenalty": 100,
+    "minScore": -500,
+    "perfectScore": 1000
+  }
 }

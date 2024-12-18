@@ -7,10 +7,10 @@ from hx711 import HX711
 
 class Scale:
     CALIBRATION_FILE = os.path.join(os.path.dirname(__file__), 'calibration.json')
-    NUM_READINGS = 5  # Default number of readings
+    NUM_READINGS = 3  # Default number of readings
     DEFAULT_CALIBRATION = {
-        'reference_unit': -399.3961653,
-        'offset':  626476.6
+        "reference_unit": -413.5824022346369,
+        "offset": 43930
     }
     
     def __init__(self, dout_pin=5, pd_sck_pin=6):
@@ -61,7 +61,7 @@ class Scale:
             print(f"Error initializing scale: {e}")
             raise
 
-    def get_weight(self, num_readings=None):
+    def get_weight(self):
         try:
             val = self.hx.get_weight(self.NUM_READINGS)
             if val is not None and -10000 < val < 10000:  # Basic sanity check
@@ -75,7 +75,7 @@ class Scale:
     def tare(self):
         try:
             self.hx.tare(times=10)
-            time.sleep(0.3)  # Small delay for stability
+            time.sleep(0.05)  # Small delay for stability
             #self._save_calibration()
         except Exception as e:
             print(f"Error during tare: {e}")
