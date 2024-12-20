@@ -13,7 +13,7 @@ class Scale:
         "offset": 43930
     }
     
-    def __init__(self, dout_pin=5, pd_sck_pin=6):
+    def __init__(self, dout_pin=17, pd_sck_pin=22):
         self.dout_pin = dout_pin
         self.pd_sck_pin = pd_sck_pin
         self.calibration = self._load_calibration()

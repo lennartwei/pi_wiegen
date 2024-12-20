@@ -55,8 +55,10 @@ export function useGameState() {
   }, []);
 
   const rollDice = useCallback(() => {
-    const firstDice = 1;
-    const secondDice = 1;
+    // const firstDice = Math.floor(Math.random() * 6) + 1;
+    // const secondDice = Math.floor(Math.random() * 6) + 1;
+    const firstDice = 2;
+    const secondDice = 2;
     const dice1 = firstDice >= secondDice ? firstDice : secondDice;
     const dice2 = firstDice >= secondDice ? secondDice : firstDice;
     
@@ -78,6 +80,7 @@ export function useGameState() {
             targetWeight,
             phase: 'drinking',
             attempts: 0,
+            maxAttempts: 1, // Force 1 attempt for duels
             duel: {
               isActive: true,
               challenger: prev.players[prev.currentPlayerIndex].name,
@@ -111,30 +114,35 @@ export function useGameState() {
   const moveToNextPlayer = useCallback(() => {
     setState(prev => {
       // Handle duel mode transitions
-      if (prev.duel?.isActive) {
+      if (prev.duel?.isActive && prev.duel.currentTurn === 'challenger') {
         // Move from challenger to opponent
-        if (prev.duel.currentTurn === 'challenger' && !prev.duel.opponentWeight) {
-          const opponentIndex = prev.players.findIndex(p => p.name === prev.duel?.opponent);
-          return {
-            ...prev,
-            currentPlayerIndex: opponentIndex,
-            duel: {
-              ...prev.duel,
-              currentTurn: 'opponent'
-            }
-          };
-        } else {
-          // Both players have measured or something went wrong - end duel
-          return {
-            ...prev,
-            currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
-            phase: 'rolling',
-            dice1: 0,
-            dice2: 0,
-            attempts: 0,
-            duel: null,
-          };
-        }
+        const opponentIndex = prev.players.findIndex(p => p.name === prev.duel?.opponent);
+        return {
+          ...prev,
+          currentPlayerIndex: opponentIndex,
+          duel: {
+            ...prev.duel,
+            currentTurn: 'opponent'
+          }
+        };
+      }
+      
+      // End duel and continue with next player after challenger
+      if (prev.duel?.isActive && prev.duel.currentTurn === 'opponent') {
+        // Find the index of the challenger
+        const challengerIndex = prev.players.findIndex(p => p.name === prev.duel?.challenger);
+        // Get the next player after the challenger
+        const nextPlayerIndex = (challengerIndex + 1) % prev.players.length;
+        
+        return {
+          ...prev,
+          currentPlayerIndex: nextPlayerIndex,
+          phase: 'rolling',
+          dice1: 0,
+          dice2: 0,
+          attempts: 0,
+          duel: null,
+        };
       }
       
       // Normal game mode transition

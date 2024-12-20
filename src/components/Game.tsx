@@ -49,7 +49,7 @@ function Game() {
       setShowDuelAnnouncement(true);
       const timer = setTimeout(() => {
         setShowDuelAnnouncement(false);
-      }, 5000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [state.duel]);
@@ -174,6 +174,10 @@ function Game() {
           attemptsLeft={state.maxAttempts - state.attempts - 1}
           score={roundScore.score}
           isPerfect={roundScore.isPerfect}
+          isDuel={state.duel?.isActive}
+          isFirstDuelPlayer={state.duel?.isActive && state.duel.currentTurn === 'challenger'}
+          nextPlayerName={state.duel?.opponent}
+          duelState={state.duel}
         />
       )}
     </div>
