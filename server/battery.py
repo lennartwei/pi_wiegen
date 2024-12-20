@@ -1,6 +1,54 @@
+try:
+    import RPi.GPIO as GPIO
+    import smbus
+    SIMULATION_MODE = False
+except ImportError:
+    SIMULATION_MODE = True
+    
+    # Mock GPIO class
+    class GPIO:
+        BCM = 'BCM'
+        IN = 'IN'
+        OUT = 'OUT'
+        
+        @staticmethod
+        def setmode(mode):
+            pass
+            
+        @staticmethod
+        def setup(channel, state):
+            pass
+            
+        @staticmethod
+        def setwarnings(flag):
+            pass
+            
+        @staticmethod
+        def cleanup():
+            pass
+            
+        @staticmethod
+        def input(channel):
+            return True  # Simulate power always connected
+
+    # Mock SMBus class
+    class SMBus:
+        def __init__(self, bus):
+            self.bus = bus
+            
+        def read_word_data(self, addr, reg):
+            if reg == 0x02:  # VCELL
+                return 13000  # Simulate 3.7V
+            elif reg == 0x04:  # SOC
+                return 75  # Simulate 75% charge
+            return 0
+            
+        def write_word_data(self, addr, reg, value):
+            pass
+    
+    smbus = type('smbus', (), {'SMBus': SMBus})()
+
 import struct
-import smbus
-import RPi.GPIO as GPIO
 from threading import Lock
 
 class BatteryMonitor:

@@ -1,98 +1,98 @@
 [
   {
-    "name": "Winzer",
-    "games": 42,
-    "perfectDrinks": 0,
-    "totalScore": -12080,
+    "averageDeviation": 46.021428571428565,
     "averageScore": -287.6190476190476,
     "bestScore": 930,
-    "worstScore": -500,
-    "averageDeviation": 46.021428571428565,
+    "currentWinStreak": 1,
+    "games": 42,
     "lastTenGames": [
       {
-        "score": 930,
-        "deviation": 0.6999999999999993,
-        "targetWeight": 22,
         "actualWeight": 21.3,
-        "timestamp": 1734727659955,
-        "isPerfect": false
+        "deviation": 0.6999999999999993,
+        "isPerfect": false,
+        "score": 930,
+        "targetWeight": 22,
+        "timestamp": 1734727659955
       },
       {
-        "score": -500,
-        "deviation": 5.100000000000001,
-        "targetWeight": 22,
         "actualWeight": 16.9,
-        "timestamp": 1734727512739,
-        "isPerfect": false
+        "deviation": 5.100000000000001,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727512739
       },
       {
-        "score": 800,
-        "deviation": 2,
-        "targetWeight": 22,
         "actualWeight": 20,
-        "timestamp": 1734727146879,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 6.600000000000001,
+        "deviation": 2,
+        "isPerfect": false,
+        "score": 800,
         "targetWeight": 22,
+        "timestamp": 1734727146879
+      },
+      {
         "actualWeight": 28.6,
-        "timestamp": 1734727008869,
-        "isPerfect": false
+        "deviation": 6.600000000000001,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727008869
       },
       {
-        "score": -500,
-        "deviation": 61.9,
-        "targetWeight": 62,
         "actualWeight": 0.1,
-        "timestamp": 1734726316181,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
         "deviation": 61.9,
+        "isPerfect": false,
+        "score": -500,
         "targetWeight": 62,
-        "actualWeight": 0.1,
-        "timestamp": 1734726309408,
-        "isPerfect": false
+        "timestamp": 1734726316181
       },
       {
+        "actualWeight": 0.1,
+        "deviation": 61.9,
+        "isPerfect": false,
         "score": -500,
-        "deviation": 59.6,
         "targetWeight": 62,
+        "timestamp": 1734726309408
+      },
+      {
         "actualWeight": 2.4,
-        "timestamp": 1734725962952,
-        "isPerfect": false
-      },
-      {
+        "deviation": 59.6,
+        "isPerfect": false,
         "score": -500,
-        "deviation": 58.7,
         "targetWeight": 62,
+        "timestamp": 1734725962952
+      },
+      {
         "actualWeight": 3.3,
-        "timestamp": 1734725956140,
-        "isPerfect": false
+        "deviation": 58.7,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 62,
+        "timestamp": 1734725956140
       },
       {
-        "score": -500,
-        "deviation": 48.8,
-        "targetWeight": 64,
         "actualWeight": 15.2,
-        "timestamp": 1734302583246,
-        "isPerfect": false
+        "deviation": 48.8,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 64,
+        "timestamp": 1734302583246
       },
       {
-        "score": -500,
-        "deviation": 63.9,
-        "targetWeight": 64,
         "actualWeight": 0.1,
-        "timestamp": 1734302573079,
-        "isPerfect": false
+        "deviation": 63.9,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 64,
+        "timestamp": 1734302573079
       }
     ],
-    "winRate": 2.380952380952381,
     "longestWinStreak": 1,
-    "currentWinStreak": 1
+    "name": "Winzer",
+    "perfectDrinks": 0,
+    "totalScore": -12080,
+    "winRate": 2.380952380952381,
+    "worstScore": -500
   },
   {
     "averageDeviation": 24.417647058823523,
@@ -102,36 +102,36 @@
     "games": 34,
     "lastTenGames": [
       {
-        "score": 890,
-        "deviation": 1.1000000000000014,
-        "targetWeight": 22,
         "actualWeight": 23.1,
-        "timestamp": 1734727645278,
-        "isPerfect": false
+        "deviation": 1.1000000000000014,
+        "isPerfect": false,
+        "score": 890,
+        "targetWeight": 22,
+        "timestamp": 1734727645278
       },
       {
-        "score": -500,
-        "deviation": 21.9,
-        "targetWeight": 22,
         "actualWeight": 0.1,
-        "timestamp": 1734727057527,
-        "isPerfect": false
-      },
-      {
+        "deviation": 21.9,
+        "isPerfect": false,
         "score": -500,
-        "deviation": 9.1,
         "targetWeight": 22,
-        "actualWeight": 12.9,
-        "timestamp": 1734726341604,
-        "isPerfect": false
+        "timestamp": 1734727057527
       },
       {
-        "score": 980,
-        "deviation": 0.20000000000000284,
-        "targetWeight": 62,
+        "actualWeight": 12.9,
+        "deviation": 9.1,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734726341604
+      },
+      {
         "actualWeight": 62.2,
-        "timestamp": 1734725979736,
-        "isPerfect": false
+        "deviation": 0.20000000000000284,
+        "isPerfect": false,
+        "score": 980,
+        "targetWeight": 62,
+        "timestamp": 1734725979736
       },
       {
         "actualWeight": 0.1,
@@ -197,52 +197,52 @@
     "games": 26,
     "lastTenGames": [
       {
-        "score": -500,
-        "deviation": 16.200000000000003,
-        "targetWeight": 22,
         "actualWeight": 38.2,
-        "timestamp": 1734727767131,
-        "isPerfect": false
+        "deviation": 16.200000000000003,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727767131
       },
       {
-        "score": -500,
-        "deviation": 21.6,
-        "targetWeight": 22,
         "actualWeight": 0.4,
-        "timestamp": 1734727132854,
-        "isPerfect": false
+        "deviation": 21.6,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727132854
       },
       {
-        "score": -500,
-        "deviation": 8.600000000000001,
-        "targetWeight": 22,
         "actualWeight": 30.6,
-        "timestamp": 1734726991087,
-        "isPerfect": false
-      },
-      {
-        "score": 810,
-        "deviation": 1.8999999999999986,
+        "deviation": 8.600000000000001,
+        "isPerfect": false,
+        "score": -500,
         "targetWeight": 22,
+        "timestamp": 1734726991087
+      },
+      {
         "actualWeight": 20.1,
-        "timestamp": 1734726362684,
-        "isPerfect": false
+        "deviation": 1.8999999999999986,
+        "isPerfect": false,
+        "score": 810,
+        "targetWeight": 22,
+        "timestamp": 1734726362684
       },
       {
-        "score": -500,
-        "deviation": 7.100000000000001,
-        "targetWeight": 62,
         "actualWeight": 54.9,
-        "timestamp": 1734726024839,
-        "isPerfect": false
+        "deviation": 7.100000000000001,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 62,
+        "timestamp": 1734726024839
       },
       {
-        "score": -500,
-        "deviation": 20.700000000000003,
-        "targetWeight": 62,
         "actualWeight": 41.3,
-        "timestamp": 1734726016640,
-        "isPerfect": false
+        "deviation": 20.700000000000003,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 62,
+        "timestamp": 1734726016640
       },
       {
         "actualWeight": 0.1,
@@ -292,44 +292,44 @@
     "games": 22,
     "lastTenGames": [
       {
-        "score": -500,
-        "deviation": 16.9,
-        "targetWeight": 22,
         "actualWeight": 38.9,
-        "timestamp": 1734727856761,
-        "isPerfect": false
+        "deviation": 16.9,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727856761
       },
       {
-        "score": 920,
-        "deviation": 0.8000000000000007,
-        "targetWeight": 22,
         "actualWeight": 22.8,
-        "timestamp": 1734727775496,
-        "isPerfect": false
+        "deviation": 0.8000000000000007,
+        "isPerfect": false,
+        "score": 920,
+        "targetWeight": 22,
+        "timestamp": 1734727775496
       },
       {
-        "score": -500,
-        "deviation": 5.300000000000001,
-        "targetWeight": 22,
         "actualWeight": 16.7,
-        "timestamp": 1734727543438,
-        "isPerfect": false
-      },
-      {
+        "deviation": 5.300000000000001,
+        "isPerfect": false,
         "score": -500,
-        "deviation": 21.7,
         "targetWeight": 22,
-        "actualWeight": 0.3,
-        "timestamp": 1734727074310,
-        "isPerfect": false
+        "timestamp": 1734727543438
       },
       {
-        "score": 620,
-        "deviation": 3.8000000000000007,
+        "actualWeight": 0.3,
+        "deviation": 21.7,
+        "isPerfect": false,
+        "score": -500,
         "targetWeight": 22,
+        "timestamp": 1734727074310
+      },
+      {
         "actualWeight": 18.2,
-        "timestamp": 1734727020919,
-        "isPerfect": false
+        "deviation": 3.8000000000000007,
+        "isPerfect": false,
+        "score": 620,
+        "targetWeight": 22,
+        "timestamp": 1734727020919
       },
       {
         "actualWeight": 0.1,
@@ -387,20 +387,20 @@
     "games": 18,
     "lastTenGames": [
       {
-        "score": -500,
-        "deviation": 21.5,
-        "targetWeight": 22,
         "actualWeight": 0.5,
-        "timestamp": 1734727953893,
-        "isPerfect": false
+        "deviation": 21.5,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727953893
       },
       {
-        "score": -500,
-        "deviation": 6.399999999999999,
-        "targetWeight": 22,
         "actualWeight": 28.4,
-        "timestamp": 1734727865191,
-        "isPerfect": false
+        "deviation": 6.399999999999999,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734727865191
       },
       {
         "actualWeight": 0.1,

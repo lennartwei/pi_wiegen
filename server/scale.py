@@ -1,9 +1,64 @@
-import RPi.GPIO as GPIO
+# First, create conditional imports
+try:
+    import RPi.GPIO as GPIO
+    from hx711 import HX711
+    SIMULATION_MODE = False
+except ImportError:
+    SIMULATION_MODE = True
+    
+    # Mock GPIO class
+    class GPIO:
+        BCM = 'BCM'
+        IN = 'IN'
+        OUT = 'OUT'
+        
+        @staticmethod
+        def setmode(mode):
+            pass
+            
+        @staticmethod
+        def setup(channel, state):
+            pass
+            
+        @staticmethod
+        def cleanup():
+            pass
+    
+    # Mock HX711 class
+    class HX711:
+        def __init__(self, dout_pin, pd_sck_pin):
+            self.dout_pin = dout_pin
+            self.pd_sck_pin = pd_sck_pin
+            self._offset = 0
+            self._reference_unit = 1
+
+        def set_reference_unit(self, reference_unit):
+            self._reference_unit = reference_unit
+
+        def set_offset(self, offset):
+            self._offset = offset
+
+        def get_reference_unit(self):
+            return self._reference_unit
+
+        def get_offset(self):
+            return self._offset
+
+        def reset(self):
+            pass
+
+        def tare(self, times=15):
+            self._offset = 0
+
+        def get_weight(self, times=3):
+            # Return simulated weight between 0-1000g
+            import random
+            return random.uniform(0, 1000)
+
 import time
 import statistics
 import json
 import os
-from hx711 import HX711
 
 class Scale:
     CALIBRATION_FILE = os.path.join(os.path.dirname(__file__), 'calibration.json')
