@@ -56,5 +56,6 @@
     "marginPenalty": 100,
     "minScore": -500,
     "perfectScore": 1000
-  }
+  },
+  "simulationMode": false
 }

@@ -66,13 +66,13 @@ export function useGameRound(
       if (measured === 0) {
         throw new Error('Invalid measurement, please try again');
       }
-      
-      finalWeight = Math.abs(measured);
+      finalWeight = measured;
       setWeight(finalWeight);
 
       if (state.duel?.isActive && state.updateDuelWeight) {
         // Update duel weights
-        await state.updateDuelWeight(finalWeight);
+        const absWeight = Math.abs(finalWeight);
+        await state.updateDuelWeight(absWeight);
         const currentPlayer = state.players[state.currentPlayerIndex];
         
         // Only show result for first player if it's a duel
@@ -84,8 +84,8 @@ export function useGameRound(
         if (state.duel.challengerWeight && state.duel.opponentWeight) {
           setShowResult(true); // Show final result for second player
           setShowingDuelResult(true);
-          const challengerDelta = Math.abs(state.duel.challengerWeight - state.targetWeight);
-          const opponentDelta = Math.abs(state.duel.opponentWeight - state.targetWeight);
+          const challengerDelta = Math.abs((state.duel.challengerWeight || 0) - state.targetWeight);
+          const opponentDelta = Math.abs((state.duel.opponentWeight || 0) - state.targetWeight);
           
           // Determine winner and scores
           const challengerWins = challengerDelta <= opponentDelta;
@@ -96,9 +96,9 @@ export function useGameRound(
           // Update stats for both players
           await updatePlayerStats(currentPlayer.name, {
             score: score,
-            deviation: Math.abs(finalWeight - state.targetWeight),
+            deviation: Math.abs(absWeight - state.targetWeight),
             targetWeight: state.targetWeight,
-            actualWeight: finalWeight,
+            actualWeight: absWeight,
             timestamp: Date.now(),
             isPerfect: false
           });
@@ -110,9 +110,9 @@ export function useGameRound(
         // Update stats for first player
         await updatePlayerStats(currentPlayer.name, {
           score: 0, // No score yet until duel completes
-          deviation: Math.abs(finalWeight - state.targetWeight),
+          deviation: Math.abs(absWeight - state.targetWeight),
           targetWeight: state.targetWeight,
-          actualWeight: finalWeight,
+          actualWeight: absWeight,
           timestamp: Date.now(),
           isPerfect: false
         });
@@ -151,26 +151,30 @@ export function useGameRound(
       if (isWin) {
         setWaitingForSpacebar(true);
         setTimeout(() => {
-          setShowResult(false);
-          moveToNextPlayer();
-          setWeight(0);
-          setIsTared(false);
-          setWaitingForSpacebar(false);
-        }, 2000);
+          if (!state.duel?.isActive) {
+            setShowResult(false);
+            moveToNextPlayer();
+            setWeight(0);
+            setIsTared(false);
+            setWaitingForSpacebar(false);
+          }
+        }, 5000);
       } else {
         incrementAttempts();
         const isLastAttempt = state.attempts + 1 >= state.maxAttempts;
         
         setWaitingForSpacebar(true);
         setTimeout(() => {
-          setShowResult(false);
-          if (isLastAttempt) {
-            moveToNextPlayer();
-            setWeight(0);
+          if (!state.duel?.isActive) {
+            setShowResult(false);
+            if (isLastAttempt) {
+              moveToNextPlayer();
+              setWeight(0);
+            }
+            setIsTared(false);
+            setWaitingForSpacebar(false);
           }
-          setIsTared(false);
-          setWaitingForSpacebar(false);
-        }, 2000);
+        }, 5000);
       }
     } catch (error) {
       console.error('Measurement error:', error);

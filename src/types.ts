@@ -30,6 +30,7 @@ export interface GameSettings {
   activePresetId: string;
   presets: GameSettingPreset[];
   players: string[];
+  simulationMode: boolean;
 }
 
 export interface GameResult {

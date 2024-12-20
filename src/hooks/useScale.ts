@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { API_BASE_URL } from '../config';
+import { simulateWeight, simulateTare } from '../utils/simulators';
+import { loadSettings } from '../utils/storage';
 
 // Singleton to manage weight measurement priority
 const weightMeasurement = {
@@ -17,6 +19,7 @@ export interface ScaleResponse {
 export function useScale() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const settings = loadSettings();
 
   const getWeight = useCallback(async (priority: boolean = false): Promise<number> => {
     if (!priority && weightMeasurement.isPriority) {
@@ -31,6 +34,10 @@ export function useScale() {
     setIsLoading(true);
     setError(null);
     try {
+      if (settings.simulationMode) {
+        return simulateWeight(priority);
+      }
+
       const response = await fetch(`${API_BASE_URL}/weight`);
       const data: ScaleResponse = await response.json();
       if (data.error) throw new Error(data.error);
@@ -52,6 +59,10 @@ export function useScale() {
     setIsLoading(true);
     setError(null);
     try {
+      if (settings.simulationMode) {
+        return simulateTare();
+      }
+
       const response = await fetch(`${API_BASE_URL}/tare`, {
         method: 'POST',
         headers: {

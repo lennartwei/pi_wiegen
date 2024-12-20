@@ -7,7 +7,8 @@ const PLAYER_STATS_KEY = 'playerStats';
 const DEFAULT_SETTINGS: GameSettings = {
   activePresetId: 'standard',
   presets: DEFAULT_PRESETS,
-  players: []
+  players: [],
+  simulationMode: false
 };
 
 export function saveSettings(settings: GameSettings): void {

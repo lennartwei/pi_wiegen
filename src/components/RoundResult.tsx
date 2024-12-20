@@ -55,28 +55,30 @@ function RoundResult({
 
   // Final duel result
   if (isDuel && !isFirstDuelPlayer && duelState) {
-    const challengerDelta = Math.abs((duelState.challengerWeight || 0) - targetWeight);
-    const opponentDelta = Math.abs((duelState.opponentWeight || 0) - targetWeight);
-    const challengerWins = challengerDelta <= opponentDelta;
+    const challengerWeight = Math.abs(duelState.challengerWeight || 0);
+    const opponentWeight = Math.abs(duelState.opponentWeight || 0);
+    const challengerAbsDelta = Math.abs(challengerWeight - targetWeight);
+    const opponentAbsDelta = Math.abs(opponentWeight - targetWeight);
+    const challengerWins = challengerAbsDelta <= opponentAbsDelta;
     
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
         <div className="bg-purple-900/90 p-8 rounded-lg text-center">
           <Swords size={48} className="mx-auto mb-4 text-yellow-400" />
           <h2 className="text-2xl font-bold mb-4">
-            {challengerWins ? `${duelState.challenger} Wins!` : `${duelState.opponent} Wins!`}
+            {challengerWins ? `${duelState.challenger} wins!` : `${duelState.opponent} wins!`}
           </h2>
           <div className="space-y-2 mb-4">
             <p className="text-lg">
-              {duelState.challenger}: {duelState.challengerWeight?.toFixed(1)}g 
+              {duelState.challenger}: {challengerWeight.toFixed(1)}g 
               <span className="opacity-75 ml-2">
-                ({Math.abs(challengerDelta).toFixed(1)}g off)
+                ({challengerAbsDelta.toFixed(1)}g off target)
               </span>
             </p>
             <p className="text-lg">
-              {duelState.opponent}: {duelState.opponentWeight?.toFixed(1)}g
+              {duelState.opponent}: {opponentWeight.toFixed(1)}g 
               <span className="opacity-75 ml-2">
-                ({Math.abs(opponentDelta).toFixed(1)}g off)
+                ({opponentAbsDelta.toFixed(1)}g off target)
               </span>
             </p>
           </div>

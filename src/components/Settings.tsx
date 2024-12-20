@@ -20,6 +20,13 @@ function Settings() {
     }));
   };
 
+  const handleSimulationToggle = () => {
+    setSettings(prev => ({
+      ...prev,
+      simulationMode: !prev.simulationMode
+    }));
+  };
+
   const handlePresetEdit = (preset: GameSettingPreset) => {
     setEditingPreset(preset);
     setShowPresetEditor(true);
@@ -86,9 +93,11 @@ function Settings() {
         <SettingPresets
           presets={settings.presets}
           activePresetId={settings.activePresetId}
+          simulationMode={settings.simulationMode}
           onPresetSelect={handlePresetSelect}
           onPresetEdit={handlePresetEdit}
           onPresetCreate={handlePresetCreate}
+          onSimulationToggle={handleSimulationToggle}
         />
 
         <div className="border-t border-white/10 pt-8">

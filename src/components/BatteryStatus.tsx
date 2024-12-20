@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Battery, Plug } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { simulateBatteryStatus } from '../utils/simulators';
+import { loadSettings } from '../utils/storage';
 
 interface BatteryStatus {
   voltage: number;
@@ -17,6 +19,12 @@ function BatteryStatus() {
   useEffect(() => {
     const fetchBatteryStatus = async () => {
       try {
+        const settings = loadSettings();
+        if (settings.simulationMode) {
+          setStatus(simulateBatteryStatus());
+          return;
+        }
+
         const response = await fetch(`${API_BASE_URL}/battery`);
         const data = await response.json();
         if (data.error) throw new Error(data.error);
