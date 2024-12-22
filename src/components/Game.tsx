@@ -41,7 +41,10 @@ function Game() {
     handleTare,
     handleMeasure,
     setShowResult
-  } = useGameRound(state, moveToNextPlayer, incrementAttempts, updatePlayerScore);
+  } = useGameRound({ 
+    ...state, 
+    updateDuelWeight 
+  }, moveToNextPlayer, incrementAttempts, updatePlayerScore);
 
   // Show duel announcement for 3 seconds when it starts
   useEffect(() => {

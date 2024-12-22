@@ -3,6 +3,19 @@ export interface Player {
   score: number;
 }
 
+export interface GameState {
+  players: Player[];
+  currentPlayerIndex: number;
+  dice1: number;
+  dice2: number;
+  targetWeight: number;
+  margin: number;
+  phase: 'rolling' | 'drinking' | 'measuring';
+  attempts: number;
+  maxAttempts: number;
+  duel: DuelState | null;
+}
+
 export interface GameSettingPreset {
   id: string;
   name: string;

@@ -1,19 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Player, DuelState } from '../types';
+import { Player, DuelState, GameState } from '../types';
 import { loadSettings, getActivePreset } from '../utils/storage';
-
-export interface GameState {
-  players: Player[];
-  currentPlayerIndex: number;
-  dice1: number;
-  dice2: number;
-  targetWeight: number;
-  margin: number;
-  phase: 'rolling' | 'drinking' | 'measuring';
-  attempts: number;
-  maxAttempts: number;
-  duel: DuelState | null;
-}
 
 export function useGameState() {
   const [state, setState] = useState<GameState>(() => {
@@ -57,6 +44,8 @@ export function useGameState() {
   const rollDice = useCallback(() => {
     const firstDice = Math.floor(Math.random() * 6) + 1;
     const secondDice = Math.floor(Math.random() * 6) + 1;
+    //const firstDice = 2;
+    //const secondDice = 2;
     const dice1 = firstDice >= secondDice ? firstDice : secondDice;
     const dice2 = firstDice >= secondDice ? secondDice : firstDice;
     
@@ -175,13 +164,16 @@ export function useGameState() {
     setState(prev => {
       if (!prev.duel) return prev;
       const isChallenger = prev.duel.currentTurn === 'challenger';
-      const updatedDuel = {
-        ...prev.duel,
-        challengerWeight: isChallenger ? weight : prev.duel.challengerWeight,
-        opponentWeight: !isChallenger ? weight : prev.duel.opponentWeight
+      const newWeight = Math.abs(weight);
+      
+      return {
+        ...prev,
+        duel: {
+          ...prev.duel,
+          challengerWeight: isChallenger ? newWeight : prev.duel.challengerWeight,
+          opponentWeight: !isChallenger ? newWeight : prev.duel.opponentWeight
+        }
       };
-
-      return { ...prev, duel: updatedDuel };
     });
   }, []);
 

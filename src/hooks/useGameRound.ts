@@ -3,11 +3,7 @@ import { useScale } from './useScale';
 import { loadSettings } from '../utils/storage';
 import { updatePlayerStats } from '../utils/playerStats';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
-import type { GameState } from './useGameState';
-
-interface GameStateWithDuel extends GameState {
-  updateDuelWeight: (weight: number) => void;
-}
+import type { GameStateWithDuel } from '../types';
 
 export interface RoundScore {
   score: number;
@@ -63,63 +59,62 @@ export function useGameRound(
     let finalWeight = 0;
     try {
       const measured = await getWeight(true);
+      finalWeight = Math.abs(measured);
+      
       if (measured === 0) {
         throw new Error('Invalid measurement, please try again');
       }
-      finalWeight = measured;
+      
       setWeight(finalWeight);
-
-      if (state.duel?.isActive && state.updateDuelWeight) {
-        // Update duel weights
-        const absWeight = Math.abs(finalWeight);
-        await state.updateDuelWeight(absWeight);
+      
+      if (state.duel?.isActive) {
         const currentPlayer = state.players[state.currentPlayerIndex];
-        
-        // Only show result for first player if it's a duel
-        if (state.duel.currentTurn === 'challenger') {
-          setShowResult(true);
-        }
 
-        // Check if both players have measured
-        if (state.duel.challengerWeight && state.duel.opponentWeight) {
-          setShowResult(true); // Show final result for second player
-          setShowingDuelResult(true);
-          const challengerDelta = Math.abs((state.duel.challengerWeight || 0) - state.targetWeight);
-          const opponentDelta = Math.abs((state.duel.opponentWeight || 0) - state.targetWeight);
+        // Update duel weights and wait for state to update
+        state.updateDuelWeight(finalWeight);
+        
+        if (state.duel.currentTurn === 'challenger') {
+          console.log('Challenger weight:', finalWeight);
+          setShowResult(true);
+          setWaitingForSpacebar(true);
           
-          // Determine winner and scores
-          const challengerWins = challengerDelta <= opponentDelta;
-          const score = state.duel.currentTurn === 'challenger'
-            ? (challengerWins ? 1000 : -500)
-            : (challengerWins ? -500 : 1000);
-          
-          // Update stats for both players
+          // Update stats for challenger
           await updatePlayerStats(currentPlayer.name, {
-            score: score,
-            deviation: Math.abs(absWeight - state.targetWeight),
+            score: 0, // Temporary score until duel completes
+            deviation: Math.abs(finalWeight - state.targetWeight),
             targetWeight: state.targetWeight,
-            actualWeight: absWeight,
+            actualWeight: finalWeight,
             timestamp: Date.now(),
             isPerfect: false
           });
-          
-          updatePlayerScore(score);
           return;
         }
 
-        // Update stats for first player
+        console.log('Opponent weight:', finalWeight);
+        setShowResult(true);
+        setShowingDuelResult(true);
+        
+        // Ensure we have both weights
+        if (state.duel.challengerWeight === null) {
+          throw new Error('Missing challenger weight');
+        }
+        
+        const challengerDelta = Math.abs(state.duel.challengerWeight - state.targetWeight);
+        const opponentDelta = Math.abs(finalWeight - state.targetWeight);
+        const challengerWins = challengerDelta <= opponentDelta;
+        
+        const score = challengerWins ? -500 : 1000;
+
         await updatePlayerStats(currentPlayer.name, {
-          score: 0, // No score yet until duel completes
-          deviation: Math.abs(absWeight - state.targetWeight),
+          score: score,
+          deviation: Math.abs(finalWeight - state.targetWeight),
           targetWeight: state.targetWeight,
-          actualWeight: absWeight,
+          actualWeight: finalWeight,
           timestamp: Date.now(),
           isPerfect: false
         });
-        updatePlayerScore(0); // Temporary score until duel completes
-
-        // First player finished - show intermediate result
-        setWaitingForSpacebar(true);
+        
+        updatePlayerScore(score);
         return;
       }
       
@@ -130,12 +125,12 @@ export function useGameRound(
       const activePreset = settings.presets.find(p => p.id === settings.activePresetId);
       if (!activePreset) return;
       
-      const score = calculateScore(finalWeight, state.targetWeight, activePreset);
+      const score = calculateScore(measured, state.targetWeight, activePreset);
       setRoundScore(score);
       updatePlayerScore(score.score);
       
       const currentPlayer = state.players[state.currentPlayerIndex];
-      const isWin = isValidWeight(finalWeight, state.targetWeight, state.margin);
+      const isWin = isValidWeight(measured, state.targetWeight, state.margin);
       
       await updatePlayerStats(currentPlayer.name, {
         score: score.score,
@@ -178,9 +173,9 @@ export function useGameRound(
       }
     } catch (error) {
       console.error('Measurement error:', error);
-      if (state.duel?.isActive && state.updateDuelWeight) {
-        // Ensure duel state is updated even if there's an error
-        await state.updateDuelWeight(finalWeight);
+      if (state.duel?.isActive) {
+        // Ensure duel state is updated even on error
+        state.updateDuelWeight(finalWeight);
       }
       setIsTared(false);
     }

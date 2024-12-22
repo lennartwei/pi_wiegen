@@ -55,8 +55,8 @@ function RoundResult({
 
   // Final duel result
   if (isDuel && !isFirstDuelPlayer && duelState) {
-    const challengerWeight = Math.abs(duelState.challengerWeight || 0);
-    const opponentWeight = Math.abs(duelState.opponentWeight || 0);
+    const challengerWeight = duelState.challengerWeight || 0;
+    const opponentWeight = duelState.opponentWeight || 0;
     const challengerAbsDelta = Math.abs(challengerWeight - targetWeight);
     const opponentAbsDelta = Math.abs(opponentWeight - targetWeight);
     const challengerWins = challengerAbsDelta <= opponentAbsDelta;

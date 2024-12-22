@@ -1,112 +1,136 @@
 [
   {
-    "name": "Winzer",
-    "games": 45,
-    "perfectDrinks": 0,
-    "totalScore": -13580,
-    "averageScore": -301.77777777777777,
+    "averageDeviation": 45.61538461538463,
+    "averageScore": -277.88461538461536,
     "bestScore": 930,
-    "worstScore": -500,
-    "averageDeviation": 45.38222222222222,
+    "currentWinStreak": 0,
+    "games": 52,
     "lastTenGames": [
       {
+        "actualWeight": 0.2,
+        "deviation": 21.8,
+        "isPerfect": false,
         "score": -500,
-        "deviation": 21.9,
         "targetWeight": 22,
+        "timestamp": 1734880737987
+      },
+      {
+        "actualWeight": 283.8,
+        "deviation": 261.8,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734880526835
+      },
+      {
+        "actualWeight": 24.1,
+        "deviation": 2.1000000000000014,
+        "isPerfect": false,
+        "score": 790,
+        "targetWeight": 22,
+        "timestamp": 1734880331700
+      },
+      {
+        "actualWeight": 10.7,
+        "deviation": 11.3,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734879940516
+      },
+      {
+        "actualWeight": 0.1,
+        "deviation": 21.9,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734879847055
+      },
+      {
+        "actualWeight": -30.4,
+        "deviation": 1.6000000000000014,
+        "isPerfect": false,
+        "score": 840,
+        "targetWeight": 32,
+        "timestamp": 1734878857000
+      },
+      {
+        "actualWeight": -41.3,
+        "deviation": 9.299999999999997,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 32,
+        "timestamp": 1734878833550
+      },
+      {
         "actualWeight": -0.1,
-        "timestamp": 1734878418479,
-        "isPerfect": false
+        "deviation": 21.9,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734878418479
       },
       {
-        "score": -500,
-        "deviation": 78.7,
-        "targetWeight": 22,
         "actualWeight": -100.7,
-        "timestamp": 1734878207317,
-        "isPerfect": false
+        "deviation": 78.7,
+        "isPerfect": false,
+        "score": -500,
+        "targetWeight": 22,
+        "timestamp": 1734878207317
       },
       {
-        "score": -500,
-        "deviation": 8.7,
-        "targetWeight": 22,
         "actualWeight": 30.7,
-        "timestamp": 1734727970480,
-        "isPerfect": false
-      },
-      {
-        "score": 930,
-        "deviation": 0.6999999999999993,
+        "deviation": 8.7,
+        "isPerfect": false,
+        "score": -500,
         "targetWeight": 22,
-        "actualWeight": 21.3,
-        "timestamp": 1734727659955,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 5.100000000000001,
-        "targetWeight": 22,
-        "actualWeight": 16.9,
-        "timestamp": 1734727512739,
-        "isPerfect": false
-      },
-      {
-        "score": 800,
-        "deviation": 2,
-        "targetWeight": 22,
-        "actualWeight": 20,
-        "timestamp": 1734727146879,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 6.600000000000001,
-        "targetWeight": 22,
-        "actualWeight": 28.6,
-        "timestamp": 1734727008869,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 61.9,
-        "targetWeight": 62,
-        "actualWeight": 0.1,
-        "timestamp": 1734726316181,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 61.9,
-        "targetWeight": 62,
-        "actualWeight": 0.1,
-        "timestamp": 1734726309408,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 59.6,
-        "targetWeight": 62,
-        "actualWeight": 2.4,
-        "timestamp": 1734725962952,
-        "isPerfect": false
+        "timestamp": 1734727970480
       }
     ],
-    "winRate": 4.444444444444445,
     "longestWinStreak": 1,
-    "currentWinStreak": 0
+    "name": "Winzer",
+    "perfectDrinks": 0,
+    "totalScore": -14450,
+    "winRate": 5.769230769230769,
+    "worstScore": -500
   },
   {
-    "averageDeviation": 24.417647058823523,
-    "averageScore": -72.3529411764706,
+    "averageDeviation": 48.44561403508773,
+    "averageScore": -217.5438596491228,
     "bestScore": 980,
-    "currentWinStreak": 1,
-    "games": 34,
+    "currentWinStreak": 0,
+    "games": 57,
     "lastTenGames": [
       {
-        "score": 890,
-        "deviation": 1.1000000000000014,
+        "score": 0,
+        "deviation": 10.600000000000001,
         "targetWeight": 22,
-        "actualWeight": 23.1,
-        "timestamp": 1734727645278,
+        "actualWeight": 32.6,
+        "timestamp": 1734885954338,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 32.9,
+        "targetWeight": 33,
+        "actualWeight": 0.1,
+        "timestamp": 1734885297583,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 10.8,
+        "targetWeight": 32,
+        "actualWeight": 21.2,
+        "timestamp": 1734885003207,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 82.5,
+        "targetWeight": 32,
+        "actualWeight": 114.5,
+        "timestamp": 1734884994018,
         "isPerfect": false
       },
       {
@@ -114,364 +138,340 @@
         "deviation": 21.9,
         "targetWeight": 22,
         "actualWeight": 0.1,
-        "timestamp": 1734727057527,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 9.1,
-        "targetWeight": 22,
-        "actualWeight": 12.9,
-        "timestamp": 1734726341604,
-        "isPerfect": false
-      },
-      {
-        "score": 980,
-        "deviation": 0.20000000000000284,
-        "targetWeight": 62,
-        "actualWeight": 62.2,
-        "timestamp": 1734725979736,
-        "isPerfect": false
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 61.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 62,
-        "timestamp": 1734558763423
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 61.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 62,
-        "timestamp": 1734558748219
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 20.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 21,
-        "timestamp": 1734555117033
-      },
-      {
-        "actualWeight": 0,
-        "deviation": 43,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 43,
-        "timestamp": 1734551750623
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 42.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 43,
-        "timestamp": 1734551721498
-      },
-      {
-        "actualWeight": 0,
-        "deviation": 64,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 64,
-        "timestamp": 1734550240282
-      }
-    ],
-    "longestWinStreak": 3,
-    "name": "Lennart",
-    "perfectDrinks": 0,
-    "totalScore": -2460,
-    "winRate": 2.941176470588235,
-    "worstScore": -500
-  },
-  {
-    "averageDeviation": 145.5457142857143,
-    "averageScore": -298,
-    "bestScore": 810,
-    "currentWinStreak": 0,
-    "games": 35,
-    "lastTenGames": [
-      {
-        "actualWeight": 914.5,
-        "deviation": 882.5,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734983806
-      },
-      {
-        "actualWeight": 617.3,
-        "deviation": 585.3,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734977444
-      },
-      {
-        "actualWeight": 187.3,
-        "deviation": 155.3,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734381113
-      },
-      {
-        "actualWeight": 181.7,
-        "deviation": 149.7,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734371459
-      },
-      {
-        "actualWeight": 690.5,
-        "deviation": 658.5,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734354010
-      },
-      {
-        "actualWeight": 224.2,
-        "deviation": 192.2,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734350821
-      },
-      {
-        "actualWeight": 931.7,
-        "deviation": 899.7,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734734339893
-      },
-      {
-        "actualWeight": 536.6,
-        "deviation": 514.6,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 22,
-        "timestamp": 1734734245987
-      },
-      {
-        "actualWeight": 470.7,
-        "deviation": 448.7,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 22,
-        "timestamp": 1734734235329
-      },
-      {
-        "actualWeight": 38.2,
-        "deviation": 16.200000000000003,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 22,
-        "timestamp": 1734727767131
-      }
-    ],
-    "longestWinStreak": 2,
-    "name": "Lars",
-    "perfectDrinks": 0,
-    "totalScore": -10430,
-    "winRate": 0,
-    "worstScore": -500
-  },
-  {
-    "averageDeviation": 24.727272727272723,
-    "averageScore": -142.27272727272728,
-    "bestScore": 970,
-    "currentWinStreak": 0,
-    "games": 22,
-    "lastTenGames": [
-      {
-        "score": -500,
-        "deviation": 16.9,
-        "targetWeight": 22,
-        "actualWeight": 38.9,
-        "timestamp": 1734727856761,
-        "isPerfect": false
-      },
-      {
-        "score": 920,
-        "deviation": 0.8000000000000007,
-        "targetWeight": 22,
-        "actualWeight": 22.8,
-        "timestamp": 1734727775496,
-        "isPerfect": false
-      },
-      {
-        "score": -500,
-        "deviation": 5.300000000000001,
-        "targetWeight": 22,
-        "actualWeight": 16.7,
-        "timestamp": 1734727543438,
+        "timestamp": 1734884576704,
         "isPerfect": false
       },
       {
         "score": -500,
         "deviation": 21.7,
         "targetWeight": 22,
-        "actualWeight": 0.3,
-        "timestamp": 1734727074310,
+        "actualWeight": -0.3,
+        "timestamp": 1734884017767,
         "isPerfect": false
       },
       {
-        "score": 620,
-        "deviation": 3.8000000000000007,
+        "score": -500,
+        "deviation": 7.5,
         "targetWeight": 22,
-        "actualWeight": 18.2,
-        "timestamp": 1734727020919,
+        "actualWeight": -29.5,
+        "timestamp": 1734883774217,
         "isPerfect": false
       },
       {
-        "actualWeight": 0.1,
-        "deviation": 51.9,
-        "isPerfect": false,
         "score": -500,
-        "targetWeight": 52,
-        "timestamp": 1734558794924
+        "deviation": 22.6,
+        "targetWeight": 22,
+        "actualWeight": -44.6,
+        "timestamp": 1734883523606,
+        "isPerfect": false
       },
       {
-        "actualWeight": 0.1,
-        "deviation": 51.9,
-        "isPerfect": false,
         "score": -500,
-        "targetWeight": 52,
-        "timestamp": 1734558781790
+        "deviation": 38.2,
+        "targetWeight": 22,
+        "actualWeight": 60.2,
+        "timestamp": 1734883377387,
+        "isPerfect": false
       },
       {
-        "actualWeight": 0.2,
-        "deviation": 31.8,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 32,
-        "timestamp": 1734550263495
-      },
-      {
-        "actualWeight": 0,
-        "deviation": 66,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 66,
-        "timestamp": 1734547665080
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 65.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 66,
-        "timestamp": 1734547655786
+        "score": 560,
+        "deviation": 4.399999999999999,
+        "targetWeight": 22,
+        "actualWeight": -17.6,
+        "timestamp": 1734883287408,
+        "isPerfect": false
       }
     ],
     "longestWinStreak": 3,
-    "name": "Martin",
+    "name": "Lennart",
     "perfectDrinks": 0,
-    "totalScore": -3130,
-    "winRate": 13.636363636363635,
+    "totalScore": -12400,
+    "winRate": 1.7543859649122806,
     "worstScore": -500
   },
   {
-    "averageDeviation": 26.714999999999993,
-    "averageScore": -126,
-    "bestScore": 1000,
+    "averageDeviation": 123.14999999999993,
+    "averageScore": -295.2083333333333,
+    "bestScore": 890,
     "currentWinStreak": 0,
-    "games": 20,
+    "games": 48,
     "lastTenGames": [
+      {
+        "score": -500,
+        "deviation": 32.9,
+        "targetWeight": 33,
+        "actualWeight": 0.1,
+        "timestamp": 1734885401561,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 31.9,
+        "targetWeight": 32,
+        "actualWeight": 0.1,
+        "timestamp": 1734885052910,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 31.9,
+        "targetWeight": 32,
+        "actualWeight": 0.1,
+        "timestamp": 1734885043625,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 26.1,
+        "targetWeight": 22,
+        "actualWeight": 48.1,
+        "timestamp": 1734884585992,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 14.4,
+        "targetWeight": 22,
+        "actualWeight": 7.6,
+        "timestamp": 1734883532398,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 88.2,
+        "targetWeight": 22,
+        "actualWeight": -110.2,
+        "timestamp": 1734882929678,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 21.9,
+        "targetWeight": 22,
+        "actualWeight": -0.1,
+        "timestamp": 1734882286961,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 22,
+        "targetWeight": 22,
+        "actualWeight": 0,
+        "timestamp": 1734881887669,
+        "isPerfect": false
+      },
+      {
+        "score": 890,
+        "deviation": 1.1000000000000014,
+        "targetWeight": 22,
+        "actualWeight": -20.9,
+        "timestamp": 1734881505251,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 262.8,
+        "targetWeight": 21,
+        "actualWeight": -283.8,
+        "timestamp": 1734881376192,
+        "isPerfect": false
+      }
+    ],
+    "longestWinStreak": 2,
+    "name": "Lars",
+    "perfectDrinks": 0,
+    "totalScore": -14170,
+    "winRate": 2.083333333333333,
+    "worstScore": -500
+  },
+  {
+    "averageDeviation": 45.50606060606062,
+    "averageScore": -221.8181818181818,
+    "bestScore": 970,
+    "currentWinStreak": 0,
+    "games": 33,
+    "lastTenGames": [
+      {
+        "score": -500,
+        "deviation": 32.9,
+        "targetWeight": 33,
+        "actualWeight": 0.1,
+        "timestamp": 1734885326442,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 31.8,
+        "targetWeight": 32,
+        "actualWeight": 0.2,
+        "timestamp": 1734885275054,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 21.9,
+        "targetWeight": 22,
+        "actualWeight": -0.1,
+        "timestamp": 1734884024175,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 262.4,
+        "targetWeight": 22,
+        "actualWeight": -284.4,
+        "timestamp": 1734882572037,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 21.9,
+        "targetWeight": 22,
+        "actualWeight": -0.1,
+        "timestamp": 1734882316302,
+        "isPerfect": false
+      },
       {
         "score": -500,
         "deviation": 21.9,
         "targetWeight": 22,
         "actualWeight": 0.1,
-        "timestamp": 1734878430183,
+        "timestamp": 1734881899430,
         "isPerfect": false
       },
       {
         "score": -500,
-        "deviation": 44.599999999999994,
+        "deviation": 262.6,
         "targetWeight": 22,
-        "actualWeight": 66.6,
-        "timestamp": 1734878225410,
+        "actualWeight": -284.6,
+        "timestamp": 1734881628462,
         "isPerfect": false
       },
       {
-        "score": -500,
-        "deviation": 21.5,
+        "score": 810,
+        "deviation": 1.8999999999999986,
         "targetWeight": 22,
-        "actualWeight": 0.5,
-        "timestamp": 1734727953893,
+        "actualWeight": -23.9,
+        "timestamp": 1734881533601,
         "isPerfect": false
       },
       {
         "score": -500,
-        "deviation": 6.399999999999999,
+        "deviation": 11.7,
         "targetWeight": 22,
-        "actualWeight": 28.4,
-        "timestamp": 1734727865191,
+        "actualWeight": -10.3,
+        "timestamp": 1734881490137,
         "isPerfect": false
       },
       {
+        "score": -500,
+        "deviation": 261.6,
+        "targetWeight": 22,
+        "actualWeight": -283.6,
+        "timestamp": 1734881223350,
+        "isPerfect": false
+      }
+    ],
+    "longestWinStreak": 3,
+    "name": "Martin",
+    "perfectDrinks": 0,
+    "totalScore": -7320,
+    "winRate": 3.0303030303030303,
+    "worstScore": -500
+  },
+  {
+    "averageDeviation": 33.290624999999984,
+    "averageScore": -184.375,
+    "bestScore": 1000,
+    "currentWinStreak": 0,
+    "games": 32,
+    "lastTenGames": [
+      {
+        "score": -500,
+        "deviation": 27.6,
+        "targetWeight": 22,
+        "actualWeight": 49.6,
+        "timestamp": 1734885969305,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 32.9,
+        "targetWeight": 33,
         "actualWeight": 0.1,
-        "deviation": 50.9,
+        "timestamp": 1734885413618,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 27.6,
+        "targetWeight": 22,
+        "actualWeight": -49.6,
+        "timestamp": 1734883781931,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 48.400000000000006,
+        "targetWeight": 22,
+        "actualWeight": -70.4,
+        "timestamp": 1734883386872,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 48.400000000000006,
+        "targetWeight": 22,
+        "actualWeight": -70.4,
+        "timestamp": 1734883297382,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 21.8,
+        "targetWeight": 22,
+        "actualWeight": 0.2,
+        "timestamp": 1734882278714,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 22,
+        "targetWeight": 22,
+        "actualWeight": 0,
+        "timestamp": 1734881893401,
+        "isPerfect": false
+      },
+      {
+        "score": -500,
+        "deviation": 262.6,
+        "targetWeight": 22,
+        "actualWeight": -284.6,
+        "timestamp": 1734881873931,
+        "isPerfect": false
+      },
+      {
+        "actualWeight": 0.3,
+        "deviation": 21.7,
         "isPerfect": false,
         "score": -500,
-        "targetWeight": 51,
-        "timestamp": 1734558842574
+        "targetWeight": 22,
+        "timestamp": 1734880545308
       },
       {
-        "actualWeight": 0.1,
-        "deviation": 50.9,
+        "actualWeight": 19.3,
+        "deviation": 2.6999999999999993,
         "isPerfect": false,
-        "score": -500,
-        "targetWeight": 51,
-        "timestamp": 1734558836459
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 60.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 61,
-        "timestamp": 1734547685029
-      },
-      {
-        "actualWeight": 0.1,
-        "deviation": 60.9,
-        "isPerfect": false,
-        "score": -500,
-        "targetWeight": 61,
-        "timestamp": 1734547676340
-      },
-      {
-        "actualWeight": 63.2,
-        "deviation": 2.200000000000003,
-        "isPerfect": false,
-        "score": 780,
-        "targetWeight": 61,
-        "timestamp": 1734264375033
-      },
-      {
-        "actualWeight": 19.8,
-        "deviation": 1.1999999999999993,
-        "isPerfect": false,
-        "score": 880,
-        "targetWeight": 21,
-        "timestamp": 1734262510485
+        "score": 730,
+        "targetWeight": 22,
+        "timestamp": 1734880343683
       }
     ],
     "longestWinStreak": 3,
     "name": "Jonas",
     "perfectDrinks": 1,
-    "totalScore": -2520,
-    "winRate": 15,
+    "totalScore": -5900,
+    "winRate": 6.25,
     "worstScore": -500
   },
   {

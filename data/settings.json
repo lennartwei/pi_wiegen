@@ -1,10 +1,9 @@
 {
   "activePresetId": "standard",
-  "margin": 15,
+  "margin": 5,
   "maxRetries": 2,
   "numReadings": 5,
   "players": [
-    "Winzer",
     "Lennart",
     "Lars",
     "Martin",
