@@ -3,7 +3,7 @@ import { User } from 'lucide-react';
 import { Player } from '../../types';
 import PlayerSeat from './PlayerSeat';
 import DiceDisplay from './DiceDisplay';
-import TableControls from './TableControls';
+import TableControls from './TableControls'; 
 
 interface GameTableProps {
   players: Player[];
@@ -11,18 +11,37 @@ interface GameTableProps {
   dice1?: number;
   dice2?: number;
   phase: 'rolling' | 'drinking' | 'measuring';
+  isLoading?: boolean;
+  isTared?: boolean;
   onRoll?: () => void;
+  onTare?: () => void;
+  onMeasure?: () => void;
   isRolling?: boolean;
+  buttonColors: {
+    tare: string;
+    measure: string;
+  };
+  margin: number;
+  attempts: number;
+  maxAttempts: number;
 }
 
-function GameTable({ 
+function GameTable({
   players, 
   currentPlayerIndex, 
   dice1, 
   dice2, 
   phase,
+  isLoading,
+  isTared,
   onRoll,
-  isRolling 
+  onTare,
+  onMeasure,
+  isRolling,
+  buttonColors,
+  margin,
+  attempts,
+  maxAttempts
 }: GameTableProps) {
   const getTableSize = (playerCount: number) => {
     if (playerCount <= 6) return { width: 60, height: 70 };
@@ -88,6 +107,38 @@ function GameTable({
         <div className="absolute inset-0 flex items-center justify-center">
           {phase === 'rolling' ? (
             <TableControls onRoll={onRoll} isRolling={isRolling} />
+          ) : phase === 'drinking' ? (
+            <div className="relative w-full h-full flex flex-col items-center justify-center -mt-4">
+              <DiceDisplay
+                dice1={dice1}
+                dice2={dice2}
+                phase={phase}
+                margin={margin}
+              />
+
+              {/* Control Buttons */}
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={onTare}
+                  disabled={isLoading}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                    isTared ? 'bg-green-600 hover:bg-green-700' : buttonColors.tare
+                  }`}
+                >
+                  {isTared ? 'Scale Tared' : 'Tare Scale'}
+                </button>
+
+                <button
+                  onClick={onMeasure}
+                  disabled={isLoading || !isTared}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                    !isTared ? 'bg-gray-600 cursor-not-allowed' : buttonColors.measure
+                  }`}
+                >
+                  Measure Drink
+                </button>
+              </div>
+            </div>
           ) : (
             <DiceDisplay
               dice1={dice1}
@@ -135,6 +186,8 @@ function GameTable({
               isActive={index === currentPlayerIndex}
               rank={playerRankings[player.name]}
               position={pos.position}
+              attempts={index === currentPlayerIndex ? attempts : undefined}
+              maxAttempts={index === currentPlayerIndex ? maxAttempts : undefined}
             />
           </div>
         );

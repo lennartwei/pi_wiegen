@@ -123,8 +123,16 @@ function Game() {
           dice1={state.dice1}
           dice2={state.dice2}
           phase={state.phase}
+          isLoading={isLoading}
+          isTared={isTared}
           onRoll={state.phase === 'rolling' ? () => handleRollClick(rollDice) : undefined}
+          onTare={handleTare}
+          onMeasure={handleMeasure}
           isRolling={isRolling}
+          buttonColors={colors}
+          margin={state.margin}
+          attempts={state.attempts}
+          maxAttempts={state.maxAttempts}
         />
       </div>
 
@@ -135,26 +143,6 @@ function Game() {
           </div>
         )}
 
-        <GameStatus
-          currentPlayer={state.players[state.currentPlayerIndex].name}
-          duel={state.duel}
-          attempts={state.attempts}
-          maxAttempts={state.maxAttempts}
-          phase={state.phase}
-          targetWeight={state.targetWeight}
-          margin={state.margin}
-        />
-
-        {state.phase === 'drinking' && (
-          <GameControls
-            phase={state.phase}
-            isLoading={isLoading}
-            isTared={isTared}
-            onTare={handleTare}
-            onMeasure={handleMeasure}
-            buttonColors={colors}
-          />
-        )}
       </div>
 
       {/* Duel Announcement */}

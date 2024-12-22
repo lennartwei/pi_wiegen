@@ -7,9 +7,11 @@ interface PlayerSeatProps {
   isActive: boolean;
   rank: number;
   position: 'left' | 'right';
+  attempts?: number;
+  maxAttempts?: number;
 }
 
-function PlayerSeat({ player, isActive, rank, position }: PlayerSeatProps) {
+function PlayerSeat({ player, isActive, rank, position, attempts, maxAttempts }: PlayerSeatProps) {
   const getRankColor = (rank: number) => {
     switch (rank) {
       case 1: return 'text-yellow-400';
@@ -37,6 +39,13 @@ function PlayerSeat({ player, isActive, rank, position }: PlayerSeatProps) {
     `}>
       {/* Avatar Container */}
       <div className="relative">
+        {/* Attempts Counter */}
+        {isActive && attempts !== undefined && maxAttempts !== undefined && (
+          <div className="absolute -top-3 -right-3 bg-yellow-500 text-yellow-950 text-xs font-bold px-2 py-0.5 rounded-full shadow-lg z-20">
+            {attempts + 1}/{maxAttempts}
+          </div>
+        )}
+
         {/* Rank Badge */}
         {rank <= 3 && (
           <div className={`absolute -top-1 ${position === 'right' ? '-left-1' : '-right-1'} w-6 h-6 rounded-full 
@@ -64,7 +73,7 @@ function PlayerSeat({ player, isActive, rank, position }: PlayerSeatProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Name and Score Stack */}
       <div className={`flex flex-col gap-1 ${position === 'right' ? 'items-end' : 'items-start'}`}>
         {/* Name Tag */}

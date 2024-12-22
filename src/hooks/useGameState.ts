@@ -55,10 +55,8 @@ export function useGameState() {
   }, []);
 
   const rollDice = useCallback(() => {
-    // const firstDice = Math.floor(Math.random() * 6) + 1;
-    // const secondDice = Math.floor(Math.random() * 6) + 1;
-    const firstDice = 2;
-    const secondDice = 2;
+    const firstDice = Math.floor(Math.random() * 6) + 1;
+    const secondDice = Math.floor(Math.random() * 6) + 1;
     const dice1 = firstDice >= secondDice ? firstDice : secondDice;
     const dice2 = firstDice >= secondDice ? secondDice : firstDice;
     
