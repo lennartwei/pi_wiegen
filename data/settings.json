@@ -3,7 +3,10 @@
   "margin": 15,
   "maxRetries": 2,
   "numReadings": 5,
-  "players": [],
+  "players": [
+    "Lennt",
+    "Lars"
+  ],
   "presets": [
     {
       "id": "beginner",
