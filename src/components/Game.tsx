@@ -5,6 +5,8 @@ import { useGameState } from '../hooks/useGameState';
 import { useScale } from '../hooks/useScale';
 import { loadSettings, updatePlayerStats } from '../utils/storage';
 import { isValidWeight, calculateScore } from '../utils/gameLogic';
+import { NavigationItem } from './NavigationItem';
+import { useNavigationSetup } from '../hooks/useNavigation';
 import RoundResult from './RoundResult';
 import AnimatedDice from './AnimatedDice';
 
@@ -23,6 +25,8 @@ function Game() {
   const [roundScore, setRoundScore] = useState({ score: 0, isPerfect: false, deviation: 0 });
   const [isTared, setIsTared] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
+  const totalItems = state.phase === 'rolling' ? 2 : 3; // Back + Roll/Tare + Measure
+  useNavigationSetup(totalItems);
 
   // Get the current color scheme based on attempts
   const colors = BUTTON_COLORS[state.attempts % BUTTON_COLORS.length];
@@ -108,12 +112,14 @@ function Game() {
     return (
       <div className="text-center p-8">
         <p className="mb-4">Please add players in settings first!</p>
-        <button
-          onClick={() => navigate('/settings')}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-        >
-          Go to Settings
-        </button>
+        <NavigationItem index={0}>
+          <button
+            onClick={() => navigate('/settings')}
+            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+          >
+            Go to Settings
+          </button>
+        </NavigationItem>
       </div>
     );
   }
@@ -121,12 +127,14 @@ function Game() {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center w-full">
-        <button
-          onClick={() => navigate('/')}
-          className="text-white hover:text-gray-300 transition-colors"
-        >
-          <ArrowLeft size={24} />
-        </button>
+        <NavigationItem index={0}>
+          <button
+            onClick={() => navigate('/')}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
+            <ArrowLeft size={24} />
+          </button>
+        </NavigationItem>
         <h1 className="text-2xl font-bold flex-1 text-center">Game Round</h1>
       </div>
 
@@ -149,14 +157,16 @@ function Game() {
         )}
 
         {state.phase === 'rolling' && (
-          <button
-            onClick={handleRollClick}
-            className="w-full bg-green-600 hover:bg-green-700 p-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-            disabled={isLoading || isRolling}
-          >
-            <Dice1 size={24} />
-            Roll Dice
-          </button>
+          <NavigationItem index={1}>
+            <button
+              onClick={handleRollClick}
+              className="w-full bg-green-600 hover:bg-green-700 p-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+              disabled={isLoading || isRolling}
+            >
+              <Dice1 size={24} />
+              Roll Dice
+            </button>
+          </NavigationItem>
         )}
 
         {(state.dice1 > 0 && state.dice2 > 0) && (
@@ -186,15 +196,17 @@ function Game() {
             
             <div className="space-y-4">
               <div>
-                <button
-                  onClick={handleTare}
-                  className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2 mb-2
-                    ${isTared ? 'bg-green-600 hover:bg-green-700' : colors.tare}`}
-                  disabled={isLoading}
-                >
-                  {isTared ? <CheckCircle2 size={24} /> : <Scale size={24} />}
-                  {isTared ? 'Scale Tared' : 'Tare Scale'}
-                </button>
+                <NavigationItem index={1}>
+                  <button
+                    onClick={handleTare}
+                    className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2 mb-2
+                      ${isTared ? 'bg-green-600 hover:bg-green-700' : colors.tare}`}
+                    disabled={isLoading}
+                  >
+                    {isTared ? <CheckCircle2 size={24} /> : <Scale size={24} />}
+                    {isTared ? 'Scale Tared' : 'Tare Scale'}
+                  </button>
+                </NavigationItem>
                 <div className={`flex items-center justify-center gap-2 text-sm
                   ${isTared ? 'text-green-300' : 'text-yellow-300'}`}
                 >
@@ -210,15 +222,17 @@ function Game() {
               </div>
 
               <div>
-                <button
-                  onClick={handleMeasure}
-                  className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2
-                    ${!isTared ? 'bg-gray-600 cursor-not-allowed' : colors.measure}`}
-                  disabled={isLoading || !isTared}
-                >
-                  <Scale size={24} />
-                  Measure Drink
-                </button>
+                <NavigationItem index={2}>
+                  <button
+                    onClick={handleMeasure}
+                    className={`w-full p-4 rounded-lg transition-colors flex items-center justify-center gap-2
+                      ${!isTared ? 'bg-gray-600 cursor-not-allowed' : colors.measure}`}
+                    disabled={isLoading || !isTared}
+                  >
+                    <Scale size={24} />
+                    Measure Drink
+                  </button>
+                </NavigationItem>
               </div>
             </div>
 

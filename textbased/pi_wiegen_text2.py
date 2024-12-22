@@ -7,13 +7,14 @@ import RPi.GPIO as GPIO
 from hx711 import HX711
 import numpy as np
 
+
 game_conf = game_conf()
 game = game()
 
 
 
 def main():
-    hx = HX711(5, 6)
+    hx = HX711(17, 22)
     hx.set_reading_format("MSB", "MSB")
     referenceUnit = -320795.0 / 803.2
     hx.set_reference_unit(referenceUnit)
@@ -21,7 +22,7 @@ def main():
     hx.tare()
     ###################################################################################################################
 
-    with open("/home/pi/pi_wiegen_by_bolt/textbased/player_data.json", "r") as json_file:
+    with open("/home/pi/pi_wiegen/textbased/player_data.json", "r") as json_file:
         player_data = json.load(json_file)
     game_score = {}
     players =[]

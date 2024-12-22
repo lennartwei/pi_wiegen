@@ -1,15 +1,20 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from websocket_manager import WebSocketManager
+from joystick import JoystickController
 from scale import Scale
-from battery import BatteryMonitor
+# from battery import BatteryMonitor
 import json
 
 app = Flask(__name__)
 CORS(app)
+websocket = WebSocketManager()
+websocket.init_app(app)
 
 # Initialize hardware
 scale = Scale()
-battery = BatteryMonitor()
+# battery = BatteryMonitor()
+joystick = JoystickController(callback=websocket.emit_joystick)
 
 @app.route('/weight')
 def get_weight():
@@ -22,7 +27,7 @@ def get_weight():
 @app.route('/battery')
 def get_battery():
     try:
-        status = battery.get_status()
+        status = 1
         return jsonify(status)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -80,7 +85,9 @@ def calibrate():
 
 if __name__ == '__main__':
     try:
-        app.run(host='0.0.0.0', port=5000)
+        joystick.start()
+        websocket.run(app)
     finally:
         scale.cleanup()
-        battery.cleanup()
+        # battery.cleanup()
+        joystick.cleanup()

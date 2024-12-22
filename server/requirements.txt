@@ -1,4 +1,4 @@
 flask==3.0.2
 flask-cors==4.0.0
+flask-socketio==5.3.6
 RPi.GPIO==0.7.1
-hx711-rpi-py==1.65.0
